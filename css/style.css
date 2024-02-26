@@ -317,7 +317,6 @@ table th {
   left: 20px;
 }
 
-
 @keyframes animloader {
   0% {
     box-shadow: 0 24px rgba(255, 255, 255, 0), 24px 24px rgba(255, 255, 255, 0),
@@ -374,7 +373,7 @@ table th {
   }
 }
 
-.mytabs .fullScreen  .Loader {
+.mytabs .fullScreen .Loader {
   webkit-text-size-adjust: 100%;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -403,9 +402,8 @@ table th {
   position: fixed;
   /* top: 0;
   left:0; */
-  overflow-y: hidden; 
+  overflow-y: hidden;
 }
-
 
 .notification-box {
   display: none;
@@ -432,22 +430,22 @@ table th {
   border-bottom: 1px solid #eee;
   padding: 6px 9px;
   margin-bottom: 0px;
-  cursor: pointer
+  cursor: pointer;
 }
 
 .notifications-item .text h4 {
   color: #777;
   font-size: 16px;
-  margin-top: 3px
+  margin-top: 3px;
 }
 
 .notifications-item .text p {
   color: #aaa;
-  font-size: 12px
+  font-size: 12px;
 }
 
 .nav-funcs {
-  color: rgba(0, 0, 0, .5);
+  color: rgba(0, 0, 0, 0.5);
   padding-right: 1rem;
   padding-left: 1rem;
 }
@@ -455,4 +453,79 @@ table th {
 .notifications-item:hover .text p,
 .notifications-item:hover .text h4 {
   color: blue !important;
+}
+
+.category-container > button {
+  /* overflow: hidden; */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background-color: #4c4c51;
+  border: 0;
+  color: #fff;
+  width: 100%;
+  font-size: 14px;
+  height: 35px;
+  padding: 0 12px;
+  position: relative;
+  text-align: left;
+}
+
+.product {
+  border: 2px solid #0078d4;
+  border-radius: 5px;
+  height: 100px;
+  width: 32%;
+  margin: 5px 5px 0 5px;
+  color: #0078d4;
+}
+
+.service-info-picker-button {
+  border: none;
+  /* border: 1px solid #0078d4; */
+  background: transparent;
+  border-radius: 5px;
+  color: #0078d4;
+  height: 37px;
+  width: 124px;
+
+  text-align: center;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.product-container-fluid {
+  max-width: 1132px;
+}
+.dropdown-menu {
+  display: none;
+}
+
+.active-category{
+  background-color: #0078d4 !important;
+  transition: all ease 0.3s;
+}
+
+.tabbed-product-container{
+  max-height: 250px;
+  overflow-y: scroll;
+}
+
+
+.tabbed-product-container::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+}
+
+.tabbed-product-container::-webkit-scrollbar
+{
+	width: 10px;
+	background-color: #F5F5F5;
+}
+
+.tabbed-product-container::-webkit-scrollbar-thumb
+{
+	background-color: #0078d4;
+	border: 2px solid #555555;
 }
