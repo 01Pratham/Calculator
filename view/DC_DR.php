@@ -12,6 +12,7 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
 
     ?>
 
+
     <section class="est_div align-center Main mt-2" id="est_div_<?= $id ?>">
         <div class="contain-btn btn-link shadow-sm light " id="contain-btn_<?= $id ?>">
             <?php
@@ -26,7 +27,7 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
                     id="add-estmt" style="z-index: 1;" value="&plus;">
                 <script>
                     $('#add-estmt').click(function () {
-                        add_estmt("ajax");
+                        add_estmt();
                     })
                 </script>
                 <?php
@@ -73,9 +74,10 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
             <div class="tab card card-body">
                 <div class="form-row">
                     <div class="form-group col-md-9">
-                        <input type="text" class="form-control EstmtName" id="estmtname_<?= $id ?>"
+                        <input type="text" class="form-control EstmtName" id="estmtname_<?= $id ?>" data-id="<?= $id ?>" data-name="<?= $id ?>"
                             placeholder="Your Estimate" name="estmtname[<?= $name ?>]" required
-                            value="<?= $Editable["estmtname"][$name] ?>">
+                            value="<?= $Editable["estmtname"][$name] ?>" onload="addLineItemsToDropdownMenu()"
+                            onchange="addLineItemsToDropdownMenu()">
                     </div>
                     <div class="col-md-3 input-group ">
                         <input type="number" min=0 class="form-control small col-8 text-sm-left" id="period_<?= $id ?>"
@@ -95,10 +97,10 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
                     if ($Editable['vmname'][$name] != null) {
                         if (count($Editable['vmname'][$name]) > 1) {
                             foreach ($Editable["vmqty"][$name] as $i => $val) {
-                                if ($i == 0){
+                                if ($i == 0) {
                                     continue;
                                 }
-                                vmContent($name, $id,   $i, 'ajax', $cloneId);
+                                vmContent($name, $id, $i, 'ajax', $cloneId);
                             }
                         }
                     }
@@ -107,12 +109,12 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
                 </div>
 
                 <?php
-                require 'Components/Storage.php';
-                require 'Components/Backup.php';
-                require 'Components/Network.php';
-                require 'Components/Security.php';
-                require 'Components/ManagedServices.php';
-                require 'Components/DRServices.php';
+                // require 'Components/Storage.php';
+                // require 'Components/Backup.php';
+                // require 'Components/Network.php';
+                // require 'Components/Security.php';
+                // require 'Components/ManagedServices.php';
+                // require 'Components/DRServices.php';
                 ?>
             </div>
         </div>
