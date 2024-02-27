@@ -186,7 +186,7 @@ if (!function_exists("getUnit")) {
 
         while ($row = mysqli_fetch_assoc($quer)) {
             $quer2 = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `tbl_unit` WHERE `id` = {$row['unit_id']}"));
-            $unitId[] = $quer2["unit_name"];
+            $unitId[] = $quer2;
         }
         return $unitId;
     }
