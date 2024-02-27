@@ -413,7 +413,7 @@ function addProductAjax($this){
         return;
     }
 
-    console.log($(`#est_div_${id} #${$parent.data("category")}_${id} .row ${$parent.data("prod")}_${id}`).length )
+    // console.log($(`#est_div_${id} #${$parent.data("category")}_${id}>.row ${$parent.data("prod")}_${id}`).length )
     if($(`#est_div_${id} #${$parent.data("category")}_${id} .row #${$parent.data("prod")}_${id}`).length > 0){
         // $this.attr("disabled", "true");
         return;
@@ -440,7 +440,7 @@ function addProductAjax($this){
         success : function(response){
             // console.log(response)
             if(req === "prod"){
-                $(`#est_div_${id}`).find(`#${$parent.data("category")}_${id} .collapse .row`).append(response);
+                $(`#est_div_${id}`).find(`#${$parent.data("category")}_${id} .collapse .main-row`).append(response);
             }else{
                 $(`#est_div_${id} .tab`).append(response);
             }
