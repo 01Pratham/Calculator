@@ -44,7 +44,7 @@ if (isset($_GET['type'])) {
           <div class="row my-2">
             <?php
             $first = true;
-            $Query = mysqli_query($con, 'SELECT DISTINCT `default_name`, `primary_category` , `sec_category` FROM `product_list` ORDER BY `primary_category` ASC;');
+            $Query = mysqli_query($con, 'SELECT DISTINCT `default_int`, `default_name`, `primary_category` , `sec_category` FROM `product_list` ORDER BY `primary_category` ASC;');
             while ($row = mysqli_fetch_array($Query)) {
               if ($row['primary_category'] == "compute" && !$first) continue;
 
@@ -52,7 +52,7 @@ if (isset($_GET['type'])) {
                 $row['default_name'] = "Virtual Machine";
               }
               ?>
-              <div class="product p-3" data-category="<?= $row['primary_category'] ?>" hidden="hidden" data-prod="<?= ($first &&$row['primary_category'] == "compute") ? "vm" : $row['sec_category'] ?>">
+              <div class="product p-3" data-category="<?= $row['primary_category'] ?>" hidden="hidden" data-prod="<?= ($first &&$row['default_int'] == "compute") ? "vm" : $row['default_int'] ?>">
                 <div class="name except" >
                   <span class="fa fa-desktop"></span>
                   <strong class="mx-2">

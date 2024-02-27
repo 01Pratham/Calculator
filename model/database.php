@@ -146,29 +146,48 @@ if (!function_exists("getProdName")) {
 }
 
 if (!function_exists("getEstimateDetails")) {
-function getEstimateDetails($id){
-    global $con;
-    $query = mysqli_query($con , "SELECT * FROM `tbl_saved_estimates` WHERE `id` = '{$id}' ");
-    if($query){
-        $data = mysqli_fetch_assoc($query);
-        return $data;
+    function getEstimateDetails($id)
+    {
+        global $con;
+        $query = mysqli_query($con, "SELECT * FROM `tbl_saved_estimates` WHERE `id` = '{$id}' ");
+        if ($query) {
+            $data = mysqli_fetch_assoc($query);
+            return $data;
+        }
     }
 }
-}
 
 
-if (!function_exists("Query")){
-    function Query($query){
-        global $con ;
+if (!function_exists("Query")) {
+    function Query($query)
+    {
+        global $con;
         return mysqli_query($con, $query);
     }
 }
 
-if (!function_exists("PPrint")){
-    function PPrint($Array){
+if (!function_exists("PPrint")) {
+    function PPrint($Array)
+    {
         echo "<pre>";
         print_r($Array);
         echo "</pre>";
     }
 }
 
+
+if (!function_exists("getUnit")) {
+    function getUnit($id)
+    {
+        global $con;
+        $unitId = array();
+
+        $quer = mysqli_query($con, "SELECT * FROM `tbl_unit_map` WHERE `prod_id` = '{$id}'");
+
+        while ($row = mysqli_fetch_assoc($quer)) {
+            $quer2 = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `tbl_unit` WHERE `id` = {$row['unit_id']}"));
+            $unitId[] = $quer2["unit_name"];
+        }
+        return $unitId;
+    }
+}

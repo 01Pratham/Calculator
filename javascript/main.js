@@ -412,8 +412,15 @@ function addProductAjax($this){
         add_vm("ajax",id,name);
         return;
     }
+
+    console.log($(`#est_div_${id} #${$parent.data("category")}_${id} .row ${$parent.data("prod")}_${id}`).length )
+    if($(`#est_div_${id} #${$parent.data("category")}_${id} .row #${$parent.data("prod")}_${id}`).length > 0){
+        // $this.attr("disabled", "true");
+        return;
+    }
+
+
     let req;
-    console.log($(`#est_div_${id} #${$parent.data("category")}_${id}`) , $parent.data("category")+"_"+id);
     if ($(`#est_div_${id} #${$parent.data("category")}_${id}`).length > 0) {
         req = "prod";
     } else {

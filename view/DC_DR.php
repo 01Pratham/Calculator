@@ -54,10 +54,10 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
                     }
                     ?>
                 </select>
-                <select name="EstType[<?= $name ?>]" id="EstType_<?= $id ?>" class="border-0 text-primary">
+                <!-- <select name="EstType[<?= $name ?>]" id="EstType_<?= $id ?>" class="border-0 text-primary">
                     <option <?= ($Editable['EstType'][$name] == "DC") ? "selected" : '' ?> value="DC">DC</option>
                     <option <?= ($Editable['EstType'][$name] == "DR") ? "selected" : '' ?> value="DR">DR</option>
-                </select>
+                </select> -->
                 <i class="fa fa-copy except text-primary  pt-2 m-1" title="Copy Estimate"
                     style="z-index: 1; cursor: pointer;" id="coptI_<?= $id ?>">
                     <input class="add-estmt btn btn-link except m-0 p-0" type="button" role="button"
