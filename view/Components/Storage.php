@@ -11,7 +11,7 @@
         } else {
             $CategoryName =  preg_replace('/_/', ' ', $strg['sec_category']);
             $new_name = ucwords( $CategoryName );
-    ?>
+        ?>
             <div class="mx-3">
                 <h6><small><?= $new_name ?> : </small></h6>
             </div>
@@ -33,7 +33,7 @@
                 <?php } ?>
 
             </div>
-    <?php
+        <?php
         }
     }
     ?>

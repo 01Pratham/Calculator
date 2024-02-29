@@ -1,10 +1,10 @@
 <?php
 session_start();
-if ($_SERVER['REQUEST_METHOD'] == "GET" ) {
+if ($_SERVER['REQUEST_METHOD'] == "GET") {
     header("Location: index.php");
     unset($_SESSION['post_data']);
 }
-if (!isset($_SESSION['emp_code']) ) {
+if (!isset($_SESSION['emp_code'])) {
     require "../view/session_expired.php";
     exit();
 }
@@ -63,21 +63,26 @@ $MothlyTotal = array();
                 <?php
                 if (!empty($_SESSION['edit_id'])) {
                     $EDITID = !empty($_POST['edit_id']) ? $_POST['edit_id'] : $_SESSION['edit_id'];
-                    $D = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `tbl_discount_data` WHERE `quot_id` = '".$EDITID."'"));
+                    $D = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `tbl_discount_data` WHERE `quot_id` = '" . $EDITID . "'"));
                     if (!empty($D)) {
                         $_DiscountedData = json_decode($D['discounted_data'], true);
-                        if($D["approved_status"] == "Approved"){
+                        if ($D["approved_status"] == "Approved") {
                             $DISC = true;
-                        }else{
+                        } else {
                             $DISC = false;
                         }
-                    }else{
+                    } else {
                         $DISC = null;
                     }
                 }
-                require '../view/Table.php';
-                require '../view/summary_table.php';
                 ?>
+                <div class="except">
+                    <?php 
+                    require '../view/Table.php'; 
+                    require '../view/summary_table.php'; 
+                    
+                    ?>
+                </div>
                 <div class="container except d-flex justify-content-center mt-3 py-3">
                     <button class="btn btn-outline-success btn-lg mx-1 export" id="export"><i class="fa fa-file-excel-o pr-2"></i> Export</button>
                     <?php
@@ -97,7 +102,7 @@ $MothlyTotal = array();
                         } else {
                         ?>
                             <button class="btn btn-outline-primary btn-lg mx-1" id="push" onclick="updateStatus('Remaining')"><i class="fab fa-telegram-plane pr-2" aria-hidden="true"></i>Send for Approval</button>
-                    <?php
+                        <?php
                         }
                     }
                     ?>
@@ -203,7 +208,7 @@ $MothlyTotal = array();
                     'total': '<?= array_sum($ProjectTotal) ?>',
                     'pot_id': '<?= $_POST['pot_id'] ?>',
                     'project_name': '<?= $_POST['project_name'] ?>',
-                    'period': <?= $period[1] ?>,
+                    'period': '<?= $Period[0] ?>',
                 },
                 dataType: "TEXT",
                 success: function(response) {
@@ -211,10 +216,10 @@ $MothlyTotal = array();
                     alert(jsonObj.Message)
                     location.reload()
                 }
-                
+
             });
         })
     </script>
 </body>
 
-</html>     
+</html>

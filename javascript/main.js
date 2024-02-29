@@ -150,7 +150,7 @@ $(".remove_arrow").each(function () {
         // console.log(event)
 
     })
-    $(this).attr("disabled", "true").css("opacity", "1")
+    // $(this).attr("disabled", "true").css("opacity", "1")
 })
 
 function add_vm(count = null, name, id, cloneId = '', lastVM = false) {
@@ -434,6 +434,7 @@ function addProductAjax($this){
         data : {
             id : id,
             prod : $parent.data("prod"),
+            name : name,
             category : $parent.data("category"),
             request : req,
         }, 

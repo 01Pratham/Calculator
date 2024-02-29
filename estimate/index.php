@@ -18,18 +18,19 @@ if (isset($_SESSION['uname'])) {
     <html lang="en">
 
     <head>
-        <?php require '../view/includes/header.php'; ?>
+        <?php
+        require '../view/includes/header.php';
+        require "../view/includes/footer.php";
+        ?>
     </head>
 
     <body class="sidebar-mini layout-fixed sidebar-collapse" style="background: #f4f6f9; overflow-x: hidden;" data-new-gr-c-s-check-loaded="14.1111.0" data-gr-ext-installed style="height: auto;">
-       
+
     <?php
     require '../view/includes/nav.php';
     // print_r($_SERVER);
-    
-    require 'estmt.php';
 
-    require "../view/includes/footer.php";
+    require 'estmt.php';
 } else {
     header('Location: ../login.php');
 }
@@ -37,7 +38,7 @@ if (isset($_SESSION['uname'])) {
 
     ?>
 
-    
+
 
 
     </body>

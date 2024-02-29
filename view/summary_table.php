@@ -1,12 +1,12 @@
 <table class="tbl_tc  except" style="max-width: 2058px; margin: auto;">
-     <tr hidden></tr>
-        <tr hidden></tr>
-        <tr hidden></tr>
-        <tr hidden></tr>
-        <tr hidden></tr>
-        <tr hidden></tr>
+    <tr hidden></tr>
+    <tr hidden></tr>
+    <tr hidden></tr>
+    <tr hidden></tr>
+    <tr hidden></tr>
+    <tr hidden></tr>
     <tbody hidden>
-        
+
         <tr>
             <th style="background: rgba(198,224,180,1)">Service Components</th>
             <th style="background: rgba(198,224,180,1)">Monthly Service Pay</th>
@@ -14,20 +14,24 @@
             <th style="background: rgba(198,224,180,1)">Total Cost</th>
             <th style="background: rgba(198,224,180,1)">One Time Service Pay</th>
         </tr>
-    <?php
-        foreach ($estmtname as $i => $v ) {
-    ?>
+        <?php
+        foreach ($Array as $KEY => $VAL) {
+            // $total = array_sum($Infrastructure[$KEY]) + array_sum($ManagedServices[$KEY]);
+            $total = ((!is_null($Infrastructure[$KEY])) ? array_sum($Infrastructure[$KEY]) : 0) + (!is_null($ManagedServices[$KEY]) ? array_sum($ManagedServices[$KEY]) : 0);
+
+        ?>
             <tr>
-                <td>ESDS' eNlight Cloud Hosting Services - <?= $estmtname[$i] ?></td>
-                <td><?= INR(array_sum($total[$i])); ?></td>
-                <td><?= intval($period[$i]) ?></td>
-                <td><?= INR(array_sum($total[$i]) * intval($period[$i])); ?></td>
-                <td><?= INR((array_sum($total[$i]) * 12) * 0.05); ?></td>
+                <td>ESDS' eNlight Cloud Hosting Services - <?= $VAL['HEAD'] ?></td>
+                <td><?= INR($total) ?></td>
+                <td><?= intval($Period[$KEY]) ?></td>
+                <td><?= INR($total * intval($Period[$KEY])); ?></td>
+                <td><?= INR(($total * 12) * 0.05); ?></td>
             </tr>
 
         <?php
-            $FinalTotal[] = array_sum($total[$i]) * intval($period[$i]);
-            $FinalOTC[] = (array_sum($total[$i]) * 12) * 0.05;
+            $FinalTotal[] = $total * intval($period[$KEY]);
+            $FinalOTC[] = ($total * 12) * 0.05;
+            $estmtname[] = $VAL['HEAD'];
         }
 
         ?>
@@ -54,7 +58,7 @@
             <th class="noBorder" colspan=80 style="color : rgba(0, 182, 255,1)">Terms and Conditions</th>
         </tr>
         <tr style=" border: hidden;">
-            <td style="background:white" hidden class= "noBorder"></td>
+            <td style="background:white" hidden class="noBorder"></td>
             <td contentEditable="true" colspan=80 class="myTextArea noBorder noExl" id="terms_cond">
                 All prices are in Indian Rupee without Taxes.<br>
                 Any change in the taxes, duties or levies due to change in government policies will be borne by the customer.<br>

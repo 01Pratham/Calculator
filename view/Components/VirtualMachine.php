@@ -31,11 +31,11 @@ function vmContent($name, $id, $count, $type = '', $cloneId = '')
         <div class="row">
             <div class="col-9">
                 <h6><small>VM Name :</small></h6>
-                <input type="text" class="form-control" id="vmname_<?= $id ?>" placeholder="Virtual Machine" name="vmname[<?= $name ?>][]" value="<?= $Editable['vmname'][$name][$count] ?>">
+                <input type="text" class="form-control" id="vmname_<?= $id ?>" placeholder="Virtual Machine" name="<?="{$name}[compute_{$id}][vmname]"?>" value="<?= $Editable['vmname'][$name][$count] ?>">
             </div>
             <div class="col-3">
                 <h6><small>Quantity :</small></h6>
-                <input type="number" class="form-control small" id="vmqty_<?= $id ?>" min=0 placeholder="Quantity" value="<?= ($Editable['vmqty'][$name][$count] != 0) ? $Editable['vmqty'][$name][$count] : 0; ?>" name="vmqty[<?= $name ?>][]">
+                <input type="number" class="form-control small" id="vmqty_<?= $id ?>" min=0 placeholder="Quantity" value="<?= ($Editable['vmqty'][$name][$count] != 0) ? $Editable['vmqty'][$name][$count] : 0; ?>" name="<?="{$name}[compute_{$id}][vmqty]"?>">
             </div>
         </div>
         <div class="form-row mt-2">
@@ -45,16 +45,16 @@ function vmContent($name, $id, $count, $type = '', $cloneId = '')
                     <div class="col-4 input-group">
                         <span class="input-group-text form-control col-5 bg-transparent border-right-0 text-sm" id="vcpu_lbl_<?= $id ?>">vCPU </span>
                         <span class="input-group-text form-control col-1 bg-transparent border-right-0 border-left-0 text-sm" id="vcpu_lbl_<?= $id ?>"> : </span>
-                        <input type="number" class="form-control small col-6 text-sm-left border-left-0" id="vcpu_<?= $id ?>" min=0 placeholder="Quantity" value="<?= !empty($Editable['vcpu'][$name][$count]) ? $Editable['vcpu'][$name][$count] : 1 ?>" name="vcpu[<?= $name ?>][]">
+                        <input type="number" class="form-control small col-6 text-sm-left border-left-0" id="vcpu_<?= $id ?>" min=0 placeholder="Quantity" value="<?= !empty($Editable['vcpu'][$name][$count]) ? $Editable['vcpu'][$name][$count] : 1 ?>" name="<?="{$name}[compute_{$id}][vcpu]"?>">
                     </div>
                     <div class="col-4 input-group">
                         <span class="input-group-text form-control col-5 bg-transparent border-right-0 text-sm" id="ram_<?= $id ?>">vRAM </span>
                         <span class="input-group-text form-control col-1 bg-transparent border-right-0 border-left-0 text-sm" id="ram_<?= $id ?>"> : </span>
-                        <input type="number" class="form-control small col-6 text-sm-left border-left-0" id="ram_<?= $id ?>" min=0 placeholder="Quantity" value="<?= !empty($Editable['ram'][$name][$count]) ? $Editable['ram'][$name][$count] : 2 ?>" name="ram[<?= $name ?>][]">
+                        <input type="number" class="form-control small col-6 text-sm-left border-left-0" id="ram_<?= $id ?>" min=0 placeholder="Quantity" value="<?= !empty($Editable['ram'][$name][$count]) ? $Editable['ram'][$name][$count] : 2 ?>" name="<?="{$name}[compute_{$id}][ram]"?>">
                     </div>
                     <div class="col-4 input-group">
                         <span class="input-group-text form-control col-5 p-0 bg-transparent border-0 " id="inst_disk_<?= $id ?>">
-                            <select name="vmDiskIOPS[<?= $name ?>][]" id="disk_<?= $id ?>" class="form-control p-0 text-sm  border-right-0">
+                            <select name="<?="{$name}[compute_{$id}][vmDiskIOPS]"?>" id="disk_<?= $id ?>" class="form-control p-0 text-sm  border-right-0">
                                 <?php
                                 $strQuery = mysqli_query($con, "SELECT DISTINCT `product`, `prod_int` FROM `product_list` WHERE `sec_category` = 'block_storage'");
                                 while ($strg = mysqli_fetch_assoc($strQuery)) {
@@ -69,13 +69,13 @@ function vmContent($name, $id, $count, $type = '', $cloneId = '')
                             </select>
                         </span>
                         <span class="input-group-text form-control col-1 bg-transparent border-right-0 border-left-0 text-sm" id="inst_disk_<?= $id ?>"> : </span>
-                        <input type="number" class="form-control small col-6 text-sm-left border-left-0" id="inst_disk_<?= $id ?>" min=0 placeholder="Quantity" value="<?= !empty($Editable['inst_disk'][$name][$count]) ? $Editable['inst_disk'][$name][$count] : 100 ?>" name="inst_disk[<?= $name ?>][]">
+                        <input type="number" class="form-control small col-6 text-sm-left border-left-0" id="inst_disk_<?= $id ?>" min=0 placeholder="Quantity" value="<?= !empty($Editable['inst_disk'][$name][$count]) ? $Editable['inst_disk'][$name][$count] : 100 ?>" name="<?="{$name}[compute_{$id}][inst_disk]"?>">
                     </div>
                 </div>
             </div>
             <div class="form-group col-md-3 px-2">
                 <h6><small>VM State :</small></h6>
-                <select name="state[<?= $name ?>][]" id="state_<?= $id ?>" class="form-control">
+                <select name="<?="{$name}[compute_{$id}][state]"?>" id="state_<?= $id ?>" class="form-control">
                     <option <?=($Editable["state"][$name][$count] == "Standalone" ) ? "selected" : ''?> value="Standalone">Standalone</option>
                     <option <?=($Editable["state"][$name][$count] == "Active"  ) ? "selected" : ''?> value="Active" class="single">Active</option>
                     <option <?=($Editable["state"][$name][$count] == "Passive"  ) ? "selected" : ''?> value="Passive" class="single">Passive</option>
@@ -100,7 +100,7 @@ function vmContent($name, $id, $count, $type = '', $cloneId = '')
 
             <div class="form-group col-md-3 px-2">
                 <h6><small>Operating System :</small></h6>
-                <select name="os[<?= $name ?>][]" id="os_<?= $id ?>" class="form-control">
+                <select name="<?="{$name}[compute_{$id}][os]"?>" id="os_<?= $id ?>" class="form-control">
                     <option value="" hidden>Select OS</option>
                     <?php create_opt('os', $Editable['os'][$name][$count]) ?>
                 </select>
@@ -108,7 +108,7 @@ function vmContent($name, $id, $count, $type = '', $cloneId = '')
             </div>
             <div class="form-group col-md-3 px-2">
                 <h6><small>Database :</small></h6>
-                <select name="database[<?= $name ?>][]" id="db_<?= $id ?>" class="form-control">
+                <select name="<?="{$name}[compute_{$id}][database]"?>" id="db_<?= $id ?>" class="form-control">
                     <option value="" hidden>Select DB</option>
                     <option value="NA">NA</option>
                     <?php create_opt('db', $Editable['database'][$name][$count]) ?>
@@ -117,15 +117,15 @@ function vmContent($name, $id, $count, $type = '', $cloneId = '')
                 <input type="hidden" id="osLic_<?= $id ?>">
             </div>
             <div class="form-group col-md-3 px-2">
-                <select name="ip_public_type[<?= $name ?>][]" id="ip_public<?= $id ?>" class="border-0 small" style="width: 100%;">
+                <select name="<?="{$name}[compute_{$id}][ip_public_type]"?>" id="ip_public<?= $id ?>" class="border-0 small" style="width: 100%;">
                     <option <?=($Editable["ip_public_type"][$name][$count] == "ipv4") ? "selected" : ''?> value="ipv4">Public IP : IPv6</option>
                     <option <?=($Editable["ip_public_type"][$name][$count] == "ipv6") ? "selected" : ''?> value="ipv6">Public IP : IPv4</option>
                 </select>
-                <input type="number" class="form-control small" id="ip_public_<?= $id ?>" min=0 placeholder="Quantity" value="<?= ($Editable['ip_public'][$name][$count] != 0) ? $Editable['ip_public'][$name][$count] : 0; ?>" name="ip_public[<?= $name ?>][]">
+                <input type="number" class="form-control small" id="ip_public_<?= $id ?>" min=0 placeholder="Quantity" value="<?= ($Editable['ip_public'][$name][$count] != 0) ? $Editable['ip_public'][$name][$count] : 0; ?>" name="<?="{$name}[compute_{$id}][ip_public]"?>">
             </div>
             <div class="form-group col-md-3 px-2">
                 <h6><small>Anti-Virus : </small></h6>
-                <select name="virus_type[<?= $name ?>][]" id="virus_type_<?= $id ?>" class="form-control">
+                <select name="<?="{$name}[compute_{$id}][virus_type]"?>" id="virus_type_<?= $id ?>" class="form-control">
                     <option value="">Select Antivirus</option>
                     <?php
                     create_opt('av', $Editable['virus_type'][$name][$count]);

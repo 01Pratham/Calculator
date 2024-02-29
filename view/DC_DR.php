@@ -9,7 +9,6 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
     require "../model/editable.php";
     global $Editable, $con, $EstmtDone;
     // print_r($Editable);  
-
     ?>
 
 
@@ -39,7 +38,7 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
                 <h6 class="OnInput">Your Estimate</h6>
             </label>
             <span class="float-right">
-                <select name="region[<?= $name ?>]" id="region_<?= $id ?>" class="border-0 text-primary">
+                <select name="<?= $name ?>[region]" id="region_<?= $id ?>" class="border-0 text-primary">
                     <?php
                     $reg = mysqli_query($con, "SELECT * FROM `tbl_region`");
                     while ($reg_row = mysqli_fetch_array($reg)) {
@@ -54,7 +53,7 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
                     }
                     ?>
                 </select>
-                <!-- <select name="EstType[<?= $name ?>]" id="EstType_<?= $id ?>" class="border-0 text-primary">
+                <!-- <select name="<?= $name ?>[EstType]" id="EstType_<?= $id ?>" class="border-0 text-primary">
                     <option <?= ($Editable['EstType'][$name] == "DC") ? "selected" : '' ?> value="DC">DC</option>
                     <option <?= ($Editable['EstType'][$name] == "DR") ? "selected" : '' ?> value="DR">DR</option>
                 </select> -->
@@ -75,20 +74,20 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
                 <div class="form-row">
                     <div class="form-group col-md-9">
                         <input type="text" class="form-control EstmtName" id="estmtname_<?= $id ?>" data-id="<?= $id ?>" data-name="<?= $id ?>"
-                            placeholder="Your Estimate" name="estmtname[<?= $name ?>]" required
+                            placeholder="Your Estimate" name="<?= $name ?>[estmtname]" required
                             value="<?= $Editable["estmtname"][$name] ?>" onload="addLineItemsToDropdownMenu()"
                             onchange="addLineItemsToDropdownMenu()">
                     </div>
                     <div class="col-md-3 input-group ">
                         <input type="number" min=0 class="form-control small col-8 text-sm-left" id="period_<?= $id ?>"
-                            placeholder="Contract Period" min=1 name="period[<?= $name ?>]" required
+                            placeholder="Contract Period" min=1 name="<?= $name ?>[period]" required
                             value="<?= $Editable['period'][$name] ?>" aria-describedby="PeriodUnit_<?= $id ?>"
                             style="font-size:15">
                         <span class="input-group-text form-control col-4 bg-light" id="PeriodUnit_<?= $id ?>">Months</span>
                     </div>
                 </div>
                 <div id="virtual_machine_<?= $id ?>">
-                    <input type="hidden" name="count_of_vm[<?= $name ?>]" id="count_of_vm_<?= $name ?>" value="1">
+                    <input type="hidden" name="<?= $name ?>[count_of_vm]" id="count_of_vm_<?= $name ?>" value="1">
 
                     <?php
                     require 'Components/VirtualMachine.php';
@@ -133,23 +132,6 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
             name = name.replace('add-vm_', '')
             add_vm("Null", name, <?= $id ?>);
         })
-        <?php
-
-        // if ($Editable['vmname'][$name] != null) {
-        //     if (count($Editable['vmname'][$name]) > 1) {
-        //         for ($i = 1; $i < $Editable['count_of_vm'][$name]; $i++) {
-        //             if ($i == ($Editable['count_of_vm'][$name] - 1) && $_POST['lastEst'] == "true") {
-        //                 echo "add_vm({$i} , {$name},{$id}, '', true);\n  ";
-        //             } else {
-    
-        //                 echo "add_vm({$i} , {$name},{$id},);\n  ";
-        //             }
-        //         }
-        //     }
-        // }
-        ?>
-
-
 
         $('#checkHead_<?= $id ?>').on('input', function () {
             if ($("#estmt_collapse_<?= $id ?>").hasClass('show')) {

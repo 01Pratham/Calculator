@@ -145,6 +145,20 @@ if (!function_exists("getProdName")) {
     }
 }
 
+if(!function_exists("getProductPrice")){
+    function getProductPrice($int){
+        
+        global $con;
+        try {
+            $query = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `product_list` WHERE `prod_int` = '{$int}'"));
+            $price = mysqli_fetch_assoc(mysqli_query( $con , "SELECT * FROM `rate_card_prices` WHERE `prod_id` = {$query['id']}" ));
+            return $price['price'];
+        }catch(Error $e){
+            return 0;
+        }
+    }
+}
+
 if (!function_exists("getEstimateDetails")) {
     function getEstimateDetails($id)
     {
