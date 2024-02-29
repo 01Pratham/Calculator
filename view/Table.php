@@ -78,10 +78,7 @@ function tblHead($Service)
 function Total($KEY)
 {
     global $ManagedServices, $Infrastructure, $Period;
-    
-
     $total =((!is_null($Infrastructure[$KEY]))? array_sum($Infrastructure[$KEY]) : 0) + (!is_null($ManagedServices[$KEY]) ? array_sum($ManagedServices[$KEY]) : 0);
-
 ?>
     <tr>
         <th class='except unshareable' style='background: rgba(212,212,212,1); '> Sr No . </th>

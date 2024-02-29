@@ -94,7 +94,7 @@ function getVm($arr)
         " | RAM "   . $arr['ram'] .
         " GB | Disk - " . preg_replace("/Block Storage|IOPS per GB| /", '', getProdName($arr['diskIops'])) .
         " IOPS - " . $arr['disk'] .
-        " GB | OS : " . getProdName($arr['os']) .
+        " GB | OS : " . getProdName($arr['os']).
         " | DB : " . getProdName($arr['db']);
 }
 

@@ -102,7 +102,7 @@ function elem()
                     prod: prod,
                 },
                 success: function(response) {
-                    console.log($this);  
+                    // console.log($this);  
                     $this.parent().find(".unit").html(response);
                 }
             })
