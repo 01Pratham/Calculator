@@ -145,15 +145,31 @@ if (!function_exists("getProdName")) {
     }
 }
 
-if(!function_exists("getProductPrice")){
-    function getProductPrice($int){
-        
+if (!function_exists("getProductPrice")) {
+    function getProductPrice($int)
+    {
+
         global $con;
         try {
             $query = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `product_list` WHERE `prod_int` = '{$int}'"));
-            $price = mysqli_fetch_assoc(mysqli_query( $con , "SELECT * FROM `rate_card_prices` WHERE `prod_id` = {$query['id']}" ));
+            $price = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `rate_card_prices` WHERE `prod_id` = {$query['id']}"));
             return $price['price'];
-        }catch(Error $e){
+        } catch (Error $e) {
+            return 0;
+        }
+    }
+}
+
+
+if (!function_exists("getProductSku")) {
+    function getProductSku($int)
+    {
+
+        global $con;
+        try {
+            $query = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `product_list` WHERE `prod_int` = '{$int}'"));
+            return $query['sku_code'];
+        } catch (Error $e) {
             return 0;
         }
     }
@@ -190,8 +206,8 @@ if (!function_exists("PPrint")) {
 }
 
 
-if (!function_exists("getUnit")) {
-    function getUnit($id)
+if (!function_exists("getProductUnit")) {
+    function getProductUnit($id)
     {
         global $con;
         $unitId = array();
@@ -203,5 +219,44 @@ if (!function_exists("getUnit")) {
             $unitId[] = $quer2;
         }
         return $unitId;
+    }
+}
+
+if (!function_exists("getUnitName")) {
+    function getUnitName($unit_id , $type = "id")
+    {
+        global $con;
+
+        // return $type;
+        try {
+            if($type == "id"){
+                return mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `tbl_unit` WHERE `id` = {$unit_id}"));
+            }else{
+                $getProdId = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `product_list` WHERE `prod_int` = '{$unit_id}'"));
+                $getUnitMap = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `tbl_unit_map` WHERE `prod_id` = '{$getProdId['id']}'"));
+
+                return mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `tbl_unit` WHERE `id` = {$getUnitMap['unit_id']}"));
+                
+            }
+        } catch (Error $e) {
+            return [
+                "id" => 1,
+                "unit_name" => "NO",
+                "is_active" => "1",
+            ];
+        }
+    }
+}
+
+if(!function_exists("getCrmGroupId")){
+    function getCrmGroupId($group){
+        global $con;
+        try {
+            $Query = mysqli_query($con, "SELECT `crm_group_id` FROM `product_list` WHERE `primary_category` = '{$group}'");
+            $array = mysqli_fetch_assoc($Query);
+            return $array["crm_group_id"];
+        }catch (Error $e){
+            return [];
+        }
     }
 }

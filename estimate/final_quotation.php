@@ -121,6 +121,9 @@ $MothlyTotal = array();
                 </div>
                 <?php
                 $temp =  json_encode(json_template($Sku_Data, $I_M), JSON_PRETTY_PRINT);
+
+                PPrint($temp);
+
                 ?>
             </div>
         </div>
@@ -204,7 +207,7 @@ $MothlyTotal = array();
                     'action': $(this).prop("id"),
                     'emp_id': <?= $_SESSION['emp_code'] ?>,
                     'data': '<?= json_encode($EstmDATA) ?>',
-                    'priceData': '<?= json_encode($I_M) ?>',
+                    'priceData': '<?= json_encode($_Prices) ?>',
                     'total': '<?= array_sum($ProjectTotal) ?>',
                     'pot_id': '<?= $_POST['pot_id'] ?>',
                     'project_name': '<?= $_POST['project_name'] ?>',

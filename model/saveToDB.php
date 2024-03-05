@@ -101,11 +101,11 @@ function updateDiscountTbl($con, $data)
     if ($data['action'] == "UpdateDiscountingStatus") {
       $query = mysqli_query($con, "UPDATE `tbl_discount_data` SET `approved_status`='{$data['status']}' , `approved_by`='{$data['approved_by']}'  WHERE `quot_id` = '{$data['id']}'");
     } else {
-      $query = mysqli_query($con, "UPDATE `tbl_discount_data` SET `discounted_data` = '{$data['discountedData']}' WHERE `quot_id` = '{$data['id']}'");
+      $query = mysqli_query($con, "UPDATE `tbl_discount_data` SET `discounted_data` = '{$data['discountedData']}' , `discounted_mrc` = '{$data['discounted_upfront']}' WHERE `quot_id` = '{$data['id']}'");
     }
   } else {
     // $Q =  "INSERT INTO `tbl_discount_data`(`quot_id`, `discounted_data`, `approved_status` , `approved_by`) VALUES ('{$data['id']}','{$data['discountedData']}','' , '{$data['approved_by']}')";
-    $query = mysqli_query($con, "INSERT INTO `tbl_discount_data`(`quot_id`, `discounted_data`, `approved_status` , `approved_by`) VALUES ('{$data['id']}','{$data['discountedData']}','' , '{$data['approved_by']}')");
+    $query = mysqli_query($con, "INSERT INTO `tbl_discount_data`(`quot_id`, `discounted_data`, `approved_status` , `discounted_mrc` , `approved_by`) VALUES ('{$data['id']}','{$data['discountedData']}','' , '{$data['discounted_upfront']}' , '{$data['approved_by']}')");
     //add new row to tbl_discounts and get the discount_id for use in tbl_quote_items
   }
 

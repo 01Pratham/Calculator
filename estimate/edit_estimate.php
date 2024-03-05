@@ -76,9 +76,6 @@ if (isset($_GET['type'])) {
         </div>
       </div>
     </div>
-
-
-
     <div class="container mt-2 Main">
       <form action="final_quotation.php" class="form1" id="form1" method="post">
         <div hidden>

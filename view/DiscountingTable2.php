@@ -729,7 +729,7 @@ function tblRow($Service, $Product, $Quantity, $MRC, $Unit = "NO", $OTC = '')
                                             INR(0);
                                         }
                                         ?></td>
-        <td class="MRC mrc_<?= $j ?> unshareable <?= $Class ?>" data-MRC="<?= $MRC ?>" data-discId="<?= $DiscountingId ?>">
+                <td class="MRC mrc_<?= $j ?> unshareable <?= $Class ?>" data-MRC="<?= $MRC ?>" data-discId="<?= $DiscountingId ?>">
             <?php
             try {
                 INR($MRC);
@@ -794,6 +794,7 @@ function PriceOs($SW, $Feild)
 }
 ?>
 <script>
+    
     const sum = (obj) => Object.values(obj).reduce((a, b) => a + b, 0);
 
     function updateTotalHtml(object) {
@@ -802,7 +803,7 @@ function PriceOs($SW, $Feild)
             DiscountedMRC = 0,
             DiscountedTotal = 0,
             discountPercentage = 0
-        j = object.j;
+            j = object.j;
         Object.keys(object.Obj).forEach(function(key) {
             let $thisMrc = $("#" + key)
             MRC = $thisMrc.find(".mrc_" + j).data("mrc");
@@ -987,7 +988,6 @@ function PriceOs($SW, $Feild)
                 $("#DiscountPercetage_" + j).val(TotalDiscountPercentage.toFixed(2)).data("percentage", TotalDiscountPercentage)
             }
         },
-
     })
 </script>
 

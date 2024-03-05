@@ -40,7 +40,7 @@ foreach ($estmtname as $j => $_Key) {
             $vm_total = array();
             $vcore_data = array();
             foreach ($vmqty[$j] as $i => $val) {
-                $compute[$j][$i] = "vCores {$cpu[$j][$i]} | RAM  {$ram[$j][$i]} GB | Disk - " . preg_replace("/Block Storage|IOPS per GB| /", "", getProdName($diskType[$j][$i])) . " IOPS/GB -  {$disk[$j][$i]} GB";
+                $compute[$j][$i] = "vCores {$cpu[$j][$i]} | RAM  {$ram[$j][$i]} GB | Disk - " . preg_replace("/[^a-zA-Z]| /", "", getProdName($diskType[$j][$i])) . " IOPS/GB -  {$disk[$j][$i]} GB";
                 $price = (($product_prices['vcpu_static'] * intval($cpu[$j][$i])) +
                     ($product_prices['vram_static'] * intval($ram[$j][$i])) +
                     ($product_prices[$diskType[$j][$i]] * intval($disk[$j][$i])));

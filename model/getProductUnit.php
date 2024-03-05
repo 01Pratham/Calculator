@@ -10,6 +10,5 @@ if($_POST["action"] == "getUnit"){
 
     $getUnit = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `tbl_unit_map` WHERE `prod_id` = '{$Query['id']}'"));
 
-    // echo getUnit($getUnit['id'])[0];
-    echo (getUnit($getUnit['id'])[0]["unit_name"]);
+    echo getUnitName($getUnit['unit_id'])["unit_name"];
 }

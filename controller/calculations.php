@@ -154,7 +154,6 @@ if (!function_exists('SkuList')) {
             }
           }
         }
-        // , $product_prices[$os[$j][$i]], "{$int}_{$j}")  : 0
         if ($cat == 'db') {
           if ($db[$j][$i] == $int) {
             $cal = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `tbl_os_calculation` WHERE `product_int` = '{$db[$j][$i]}'"));
