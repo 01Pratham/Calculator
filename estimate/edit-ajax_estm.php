@@ -52,7 +52,7 @@ if (isset($_POST['name'])) {
                                 $("#" + newId).click();
                             }
                     } else if ($(this).prop("name").match(/\[\]/) == '[]') {
-                        let countOfVm = $("#count_of_vm_<?= $cloneId ?>").val();
+                        let countOfVm = $("#count_of_virtual_machine_<?= $cloneId ?>").val();
                         // console.log("yes")
                         if (state != "done") {
                             for (let i = 1; i < countOfVm; i++) {

@@ -11,7 +11,7 @@ foreach ($_Data as $key => $arr) {
             if ($_K == "region") $Array[$key]["region"] = $_V;
 
             if (is_array($_V)) {
-                if (preg_match("/compute_/", $_K)) {
+                if (preg_match("/vm_/", $_K)) {
                     $vmarr = [
                         "cpu" => $_V["vcpu"],
                         "ram" => $_V["ram"],
@@ -126,7 +126,7 @@ foreach ($_Data as $key => $arr) {
     }
 }
 
-
+// PPrint($Array);
 $Infrastructure = [];
 $ManagedServices = [];
 $Period = [];
@@ -145,7 +145,7 @@ foreach ($Array as $KEY => $VAL) {
                     $Infrastructure[$KEY][] = $val["mrc"];
                 }
 
-                if (!preg_match("/compute/", $Key)) {
+                if (!preg_match("/vm/", $Key)) {
                     $Products[$KEY][$Key][$key] = [
                         "product" => $val["product"],
                         "SKU" => $val["sku"],

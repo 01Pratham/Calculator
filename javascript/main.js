@@ -155,9 +155,9 @@ $(".remove_arrow").each(function () {
 
 function add_vm(count = null, name, id, cloneId = '', lastVM = false) {
     // console.log($('.add_btn').prop("id"));
-    var count_of_vm = parseInt($('#count_of_vm_' + name).val()) + 1;
-    $('#count_of_vm_' + name).val(count_of_vm);
-    countID = name + "" + count_of_vm
+    var count_of_virtual_machine = parseInt($('#count_of_virtual_machine_' + name).val()) + 1;
+    $('#count_of_virtual_machine_' + name).val(count_of_virtual_machine);
+    countID = name + "" + count_of_virtual_machine
     var region_val = $('#region_' + id).val();
     var sector_val = $('#sector_' + id).val();
     // console.log(count);
@@ -186,7 +186,7 @@ function add_estmt(cloneId = '', lastEst = false) {
     let count_of = 1;
     var count_of_est = parseInt($('#count_of_est').val()) + 1;
     $('#count_of_est').val(count_of_est);
-    // alert (count_of_est+""+count_of_vm);
+    // alert (count_of_est+""+count_of_virtual_machine);
     var count_id = count_of_est + "" + count_of;
     $.ajax({
         type: "POST",
@@ -400,7 +400,7 @@ function addLineItemsToDropdownMenu() {
     $(".dropdown-menu").html("");
     $(".EstmtName").each(function () {
         let $name = ($(this).val() === '') ? "Your Estimate" : $(this).val();
-        $(".dropdown-menu").append(`<button class="dropdown-item" data-id = "${$(this).data("id")}" data-name = "${$(this).data("name")}" onclick = "addProductAjax($(this))" >${$name}</button>`);
+        $(".dropdown-menu").append(`<div class="dropdown-item" data-id = "${$(this).data("id")}" data-name = "${$(this).data("name")}" onclick = "addProductAjax($(this))" >${$name}</div>`);
     })
 }
 

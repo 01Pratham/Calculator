@@ -35,7 +35,7 @@ foreach ($Array as $KEY => $VAL) {
                 foreach ($_V as $_k => $_v) {
                     $DiscountingId = $_k;
                     $trId = $_k;
-                    $group = preg_match("/compute/",$_K) ? $_k : $_K;
+                    $group = preg_match("/compute/", $_K) ? $_k : $_K;
                     tblRow($_v);
                 }
 
@@ -77,13 +77,13 @@ function tblRow($arr)
 
     $discount = $arr["discount"] / 100;
 ?>
-    <tr id="<?= $trId ?>">
+    <tr id="<?= $trId . "_" . $KEY ?>">
         <td><?= $arr["service"] ?></td>
         <td class="text-left final"><?= $arr["product"] ?></td>
         <td class="qty"><?= $arr["qty"] ?></td>
         <td class='cost unshareable'><?= INR($arr["unit_price"]) ?></td>
         <td class=" MRC mrc_<?= $KEY . " $Class" ?> unshareable " data-MRC="<?= $arr["mrc"] ?>" data-discId="<?= $DiscountingId ?>"><?= INR($arr["mrc"]) ?></td>
-        <td class="discount" data-percentage="<?= $arr["discount"] ?>" data-key="<?= $KEY ?>" data-discId="<?= $DiscountingId ?>" data-group = "<?= $group ?>"><?= number_format($arr["discount"], 2, '.', "") . " %"  ?></td>
+        <td class="discount" data-percentage="<?= $arr["discount"] ?>" data-key="<?= $KEY ?>" data-discId="<?= $DiscountingId ?>" data-group="<?= $group ?>"><?= number_format($arr["discount"], 2, '.', "") . " %"  ?></td>
         <td class="DiscountedMrc <?= $Class ?>"><?= INR($arr["mrc"] - ($arr["mrc"] * $discount)) ?></td>
         <td><?= $arr["otc"] ?></td>
     </tr>
@@ -184,8 +184,8 @@ function Total($KEY)
         j = object.j;
         Object.keys(object.Obj).forEach(function(key) {
             let $thisMrc;
-            if (key.match(/compute/g)) {
-                $thisMrc = $("#" + key)
+            if (key.match(/vm/g)) {
+                $thisMrc = $("#" + key + "_" + j)
                 MRC = $thisMrc.find(".mrc_" + j).data("mrc");
                 let vmAvgPerc = (sum(object.Obj[key]) / Object.keys(object.Obj[key]).length);
                 let DiscountedMRC = MRC - (MRC * (vmAvgPerc / 100));
@@ -198,7 +198,7 @@ function Total($KEY)
                 }
             } else {
                 Object.keys(object.Obj[key]).forEach(function(prodKey) {
-                    $thisMrc = $("#" + prodKey)
+                    $thisMrc = $("#" + prodKey + "_" + j)
                     MRC = $thisMrc.find(".mrc_" + j).data("mrc");
                     discountPercentage = object.Obj[key][prodKey];
                     DiscountedMRC = MRC - (MRC * (discountPercentage / 100));
@@ -209,7 +209,6 @@ function Total($KEY)
                     } else if ($thisMrc.find(".DiscountedMrc").hasClass("Managed_" + j)) {
                         DiscountedMng += DiscountedMRC;
                     }
-                    // console.log(prodKey,discountPercentage)
                 })
             }
         })
@@ -226,10 +225,24 @@ function Total($KEY)
     <?php
     echo "let DiscountedData = {";
     foreach ($Array as $KEY => $VAL) {
-        echo $KEY . " : {
-                'percentage' : '',
-                'Data' : {} 
-            },";
+        if (is_array($VAL)) {
+            echo $KEY . " : {
+            'percentage' : '',
+            'Data' : { ";
+            foreach ($VAL as $K => $V) {
+                if(is_array($V)){
+                    if(preg_match("/compute/",$K)){
+                        foreach ($V as $k => $V) {
+                            echo "$k : {},\n";
+                        }
+                        continue;
+                    }
+                    echo "$K : {},\n";
+                }
+            }
+            echo " },\n";
+            echo "}, \n";
+        }
     }
     echo "}; \n";
     ?>
@@ -348,12 +361,11 @@ function Total($KEY)
                 totalInfra(j, "discountedTotal")
                 let discountID = $(this).data("discid")
                 let group = $(this).data("group")
-
-                if(group.match(/compute/)){
+                if (group.match(/compute/)) {
                     DiscountedData[j]["Data"][group]["CPU"] = percentage * 100
                     DiscountedData[j]["Data"][group]["RAM"] = percentage * 100
                     DiscountedData[j]["Data"][group]["Disk"] = percentage * 100
-                }else{
+                } else {
                     DiscountedData[j]["Data"][group][discountID] = percentage * 100
                 }
 

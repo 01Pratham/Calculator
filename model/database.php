@@ -65,8 +65,8 @@ if (!function_exists('employee')) {
 if (!function_exists('create_opt')) {
     function create_opt($category, $savedVal = "")
     {
-        global $con;
-        $query = mysqli_query($con, "SELECT DISTINCT `product` , `prod_int` FROM `product_list` WHERE `sec_category` = '{$category}'");
+        global $con, $_GET;
+        $query = mysqli_query($con, "SELECT DISTINCT `product` , `prod_int` FROM `product_list` WHERE `sec_category` = '{$category}' AND `rate_card_id` = 1");
         while ($product = mysqli_fetch_assoc($query)) {
             if ($savedVal == $product['prod_int']) {
                 echo "<option selected value  = '{$product['prod_int']}'>{$product['product']}</option>";
@@ -218,25 +218,32 @@ if (!function_exists("getProductUnit")) {
             $quer2 = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `tbl_unit` WHERE `id` = {$row['unit_id']}"));
             $unitId[] = $quer2;
         }
-        return $unitId;
+        if (count($unitId) > 0) {
+            return $unitId;
+        } else {
+            return [
+                0 => [
+                    "unit_name" => "NO"
+                ]
+            ];
+        }
     }
 }
 
 if (!function_exists("getUnitName")) {
-    function getUnitName($unit_id , $type = "id")
+    function getUnitName($unit_id, $type = "id")
     {
         global $con;
 
         // return $type;
         try {
-            if($type == "id"){
+            if ($type == "id") {
                 return mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `tbl_unit` WHERE `id` = {$unit_id}"));
-            }else{
+            } else {
                 $getProdId = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `product_list` WHERE `prod_int` = '{$unit_id}'"));
                 $getUnitMap = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `tbl_unit_map` WHERE `prod_id` = '{$getProdId['id']}'"));
 
                 return mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `tbl_unit` WHERE `id` = {$getUnitMap['unit_id']}"));
-                
             }
         } catch (Error $e) {
             return [
@@ -248,14 +255,15 @@ if (!function_exists("getUnitName")) {
     }
 }
 
-if(!function_exists("getCrmGroupId")){
-    function getCrmGroupId($group){
+if (!function_exists("getCrmGroupId")) {
+    function getCrmGroupId($group)
+    {
         global $con;
         try {
             $Query = mysqli_query($con, "SELECT `crm_group_id` FROM `product_list` WHERE `primary_category` = '{$group}'");
             $array = mysqli_fetch_assoc($Query);
             return $array["crm_group_id"];
-        }catch (Error $e){
+        } catch (Error $e) {
             return [];
         }
     }

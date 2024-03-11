@@ -16,7 +16,7 @@ if (isset($_POST['action']) && $_POST['action'] == "Discount") {
         if (is_array($Arr)) {
             foreach ($Arr as $Key => $Val) {
                 if (is_array($Val)) {
-                    if (preg_match("/compute/", $Index)) {
+                    if (preg_match("/vm/", $Index)) {
                         $maxDiscountTotal[] = (Product($Val['SKU'])["discountable_price"] * intval($Val["Quantity"])) * floatval($Arr["QTY"]);
                     } else {
                         $maxDiscountTotal[] = (Product($Val['SKU'])["discountable_price"] * intval($Val["Quantity"]));
@@ -39,7 +39,7 @@ if (isset($_POST['action']) && $_POST['action'] == "Discount") {
     foreach ($Data as $Index => $Arr) {
         if (is_array($Arr)) {
             foreach ($Arr as $Key => $Val) {
-                if (preg_match("/compute/", $Index)) {
+                if (preg_match("/vm/", $Index)) {
                     if ($Key == "QTY") continue;
                     $MR = floatval($Val["MRC"]) * floatval($Arr["QTY"]);
                     $DM = ($MR -

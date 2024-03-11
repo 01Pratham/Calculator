@@ -3,7 +3,10 @@
 function DC_DR($name, $id, $type = '', $cloneId = '')
 {
     // echo $name." ". $id." " .$type." " . $cloneId;
-    session_start();
+    if(session_status() === PHP_SESSION_NONE){
+        session_start();
+    }
+    // echo session_status();
     $SESSION['post_data'] = $_POST;
     // require "colocation.php";
     require "../model/editable.php";
@@ -34,7 +37,7 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
             <label class="text-left text-primary pt-3" for="checkHead_<?= $id ?>" id="estmtHead_<?= $id ?>" style="z-index: 1;">
                 <h6 class="OnInput">Your Estimate</h6>
             </label>
-            <span class="float-right">
+            <span class="float-right pt-3">
                 <select name="<?= $name ?>[region]" id="region_<?= $id ?>" class="border-0 text-primary">
                     <?php
                     $reg = mysqli_query($con, "SELECT * FROM `tbl_region`");
@@ -54,9 +57,9 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
                     <option <?= ($Editable['EstType'][$name] == "DC") ? "selected" : '' ?> value="DC">DC</option>
                     <option <?= ($Editable['EstType'][$name] == "DR") ? "selected" : '' ?> value="DR">DR</option>
                 </select> -->
-                <i class="fa fa-copy except text-primary  pt-2 m-1" title="Copy Estimate" style="z-index: 1; cursor: pointer;" id="coptI_<?= $id ?>">
+                <!-- <i class="fa fa-copy except text-primary  pt-2 m-1" title="Copy Estimate" style="z-index: 1; cursor: pointer;" id="coptI_<?= $id ?>">
                     <input class="add-estmt btn btn-link except m-0 p-0" type="button" role="button" id="clone-est_<?= $id ?>" style="z-index: 5; font-size: 20px;">
-                </i>
+                </i> -->
             </span>
             <script>
                 $('#coptI_<?= $id ?>').click(() => {
@@ -68,7 +71,7 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
             <div class="tab card card-body">
                 <div class="form-row">
                     <div class="form-group col-md-9">
-                        <input type="text" class="form-control EstmtName" id="estmtname_<?= $id ?>" data-id="<?= $id ?>" data-name="<?= $id ?>" placeholder="Your Estimate" name="<?= $name ?>[estmtname]" required value="<?= $Editable[$name]["estmtname"] ?>" onload="addLineItemsToDropdownMenu()" onchange="addLineItemsToDropdownMenu()">
+                        <input type="text" class="form-control EstmtName" id="estmtname_<?= $id ?>" data-id="<?= $id ?>" data-name="<?= $name ?>" placeholder="Your Estimate" name="<?= $name ?>[estmtname]" required value="<?= $Editable[$name]["estmtname"] ?>" onload="addLineItemsToDropdownMenu()" onchange="addLineItemsToDropdownMenu()">
                     </div>
                     <div class="col-md-3 input-group ">
                         <input type="number" min=0 class="form-control small col-8 text-sm-left" id="period_<?= $id ?>" placeholder="Contract Period" min=1 name="<?= $name ?>[period]" required value="<?= $Editable[$name]['period'] ?>" aria-describedby="PeriodUnit_<?= $id ?>" style="font-size:15">
@@ -76,23 +79,30 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
                     </div>
                 </div>
                 <div id="virtual_machine_<?= $id ?>">
-                    <input type="hidden" name="<?= $name ?>[count_of_vm]" id="count_of_vm_<?= $name ?>" value="<?= $Editable[$name]['count_of_vm'] ?>">
+                    <input type="hidden" name="<?= $name ?>[count_of_virtual_machine]" id="count_of_virtual_machine_<?= $name ?>" value="<?= !empty($Editable[$name]['count_of_virtual_machine']) ?$Editable[$name]['count_of_virtual_machine'] : 0 ?>">
 
                     <?php
                     require 'Components/VirtualMachine.php';
 
-                    vmContent($name, $id, 0, "", $cloneId);
-                    if ($Editable[$name]['count_of_vm'] > 1) {
+                    // vmContent($name, $id, 0, "", $cloneId);
+                    if ($Editable[$name]['count_of_virtual_machine'] > 0) {
                         $i = 1;
                         foreach ($Editable[$name] as $key => $val) {
-                            if (preg_match("/compute/", $key)) {
-                                if ($key == "compute_{$name}") {
-                                    continue;
-                                }
+                            if (preg_match("/vm/", $key)) {
+                                // echo $key;
+                                // if ($i == 1 ) {
+                                // $i++;
 
+                                //     continue;
+                                // }
+                                $new_id = preg_replace("/vm_/","", $key);
+                                // echo $i;
+                                
+                                vmContent($name, $new_id, $i, 'ajax', $cloneId);
                                 $i++;
-                                vmContent($name, $id . $i, $i, 'ajax', $cloneId);
+                                
                             }
+                            // echo "hi";
                         }
                     }
 
@@ -106,7 +116,7 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
 
                 foreach ($Editable[$name] as $key => $val) {
                     $i = 1;
-                    if (preg_match("/compute/", $key) || !is_array($val)) {
+                    if (preg_match("/vm/", $key) || !is_array($val)) {
                         continue;
                     }
 
@@ -117,7 +127,7 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
                             <a class="btn btn-link text-left" id="<?= $key ?>_head_<?= $id ?>" data-toggle="collapse" href="#<?= $key . "collapse_{$id}" ?>" role="button" aria-expanded="true" aria-controls="<?= $key . "collapse_{$id}" ?>">
                                 <i class="fa fa-desktop"></i>
                                 <h6 class="d-inline-block ml-1">
-                                    <?= ucwords($key) ?> Services :
+                                    <?= ucwords($key) ?> :
                                 </h6>
                                 <h6 class="d-inline-block ml-1 OnInput"></h6>
                             </a>

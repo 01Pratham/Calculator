@@ -40,7 +40,7 @@ function json_template($arr, $total)
             $template['phase_name'][$pCount]["phase_start_date"] = $date;
             $template['phase_name'][$pCount]["phase_tenure_month"] = $VAL["phase_tenure"];
             $template['phase_name'][$pCount]["phase_total_recurring"] = $VAL["phase_total_recurring"];
-            $template['phase_name'][$pCount]["phase_total_otp"] = "";
+            $template['phase_name'][$pCount]["phase_total_otp"] = 0;
             if (is_array($VAL["groups"])) {
                 foreach ($VAL as $Key => $Val) {
                     if (is_array($Val)) {
@@ -59,7 +59,7 @@ function json_template($arr, $total)
                                             $template['phase_name'][$pCount]["group_name"][$gCount]['products'][$iCount]['product_sku'] = $_v["sku_code"];
                                             $template['phase_name'][$pCount]["group_name"][$gCount]['products'][$iCount]['product_quantity'] = $_v["qty"];
                                             $template['phase_name'][$pCount]["group_name"][$gCount]['products'][$iCount]['product_price'] = $_v["unit_price"];
-                                            $template['phase_name'][$pCount]["group_name"][$gCount]['products'][$iCount]['product_discount'] = $_v["discount"];
+                                            $template['phase_name'][$pCount]["group_name"][$gCount]['products'][$iCount]['product_discount'] = is_null($_v["discount"])? 0:$_v["discount"];
                                             $iCount += 1;
                                         }
                                     }

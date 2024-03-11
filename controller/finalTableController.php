@@ -1,12 +1,8 @@
 <?php
-
-// PPrint($_POST);
-
-
 $Array = array();
 $_Prices = [];
 $Sku_Data = [];
-
+// PPrint($_POST);
 foreach ($_POST as $key => $arr) {
     if (is_array($arr)) {
         $vmId = 1;
@@ -24,7 +20,7 @@ foreach ($_POST as $key => $arr) {
             if ($_K == "region") $Array[$key]["region"] = $_V;
 
             if (is_array($_V)) {
-                if (preg_match("/compute_/", $_K)) {
+                if (preg_match("/vm_/", $_K)) {
                     $vmarr = [
                         "cpu" => $_V["vcpu"],
                         "ram" => $_V["ram"],
@@ -81,13 +77,13 @@ foreach ($_POST as $key => $arr) {
                     ];
 
                     $vmId += 1;
-                    $_Prices[$key]["VM" . preg_replace("/compute_/", "", $_K)][$_V["vmname"]] = getVmPrice($vmarr) * $_V["vmqty"];
+                    $_Prices[$key]["VM" . preg_replace("/vm_/", "", $_K)][$_V["vmname"]] = getVmPrice($vmarr) * $_V["vmqty"];
                     // $Sku_Data
 
                     $Array[$key]["software"] = [];
                     if (!empty($_V["database"])) {
                         $Array[$key]["software"] = array_merge($Array[$key]["software"], getSoftwareLic("db"));
-                        $_Prices[$key]["VM" . preg_replace("/compute_/", "", $_K)]["db"] = getSoftPricesByVM(["int" => $_V["database"], "vcore" => $_V["vcpu"], "vmqty" => $_V["vmqty"]]);
+                        $_Prices[$key]["VM" . preg_replace("/vm_/", "", $_K)]["db"] = getSoftPricesByVM(["int" => $_V["database"], "vcore" => $_V["vcpu"], "vmqty" => $_V["vmqty"]]);
                         $Sku_Data[$key]["groups"][$_K]["products"]["db"] = [
                             "qty" => getSoftPricesByVM(["int" => $_V["database"], "vcore" => $_V["vcpu"], "vmqty" => 1], "lics"),
                             "sku_code" => getProductSku($_V["database"]),
@@ -97,7 +93,7 @@ foreach ($_POST as $key => $arr) {
                     }
                     if (!empty($_V["os"])) {
                         $Array[$key]["software"] = array_merge($Array[$key]["software"], getSoftwareLic("os"));
-                        $_Prices[$key]["VM" . preg_replace("/compute_/", "", $_K)]["os"] = getSoftPricesByVM(["int" => $_V["os"], "vcore" => $_V["vcpu"], "vmqty" => $_V["vmqty"]]);
+                        $_Prices[$key]["VM" . preg_replace("/vm_/", "", $_K)]["os"] = getSoftPricesByVM(["int" => $_V["os"], "vcore" => $_V["vcpu"], "vmqty" => $_V["vmqty"]]);
                         $Sku_Data[$key]["groups"][$_K]["products"]["os"] = [
                             "qty" => getSoftPricesByVM(["int" => $_V["os"], "vcore" => $_V["vcpu"], "vmqty" => 1], "lics"),
                             "sku_code" => getProductSku($_V["os"]),
@@ -149,8 +145,16 @@ foreach ($_POST as $key => $arr) {
                     foreach ($_V as $_k => $_v) {
                         $name = preg_replace("/_select|_qty|_unit/", "", $_k);
                         if (preg_match("/_mgmt/", $_k) && preg_match("/os|db/", $_k)) {
-                            $Array[$key][$_K] = array_merge($Array[$key][$_K], getMngServicesQty("os"));
-                            $Array[$key][$_K] = array_merge($Array[$key][$_K], getMngServicesQty("db"));
+                            if (preg_match("/os/", $_k)) {
+                                $Array[$key][$_K] = array_merge($Array[$key][$_K], getMngServicesQty("os"));
+
+                                $Sku_Data[$key]["groups"][$_K]["products"] = array_merge($Sku_Data[$key]["groups"][$_K]["products"], getMngServicesQty("os", "SKU"));
+                            }
+                            // $Sku_Data[$key]["groups"][$_K]["products"][$name]
+                            if (preg_match("/db/", $_k)) {
+                                $Array[$key][$_K] = array_merge($Array[$key][$_K], getMngServicesQty("db"));
+                                $Sku_Data[$key]["groups"][$_K]["products"] = array_merge($Sku_Data[$key]["groups"][$_K]["products"], getMngServicesQty("db", "SKU"));
+                            }
                             continue;
                         }
                         $Unit = (isset($_V["{$name}_unit"]) ? getUnitName($_V["{$name}_unit"])['unit_name'] : getUnitName($_V["{$name}_select"], "prod_int")["unit_name"]);
@@ -210,7 +214,7 @@ foreach ($Array as $KEY => $VAL) {
     }
 }
 
-PPrint($Sku_Data);
+// PPrint($Sku_Data);
 
 
 function getVm($arr)
@@ -226,28 +230,29 @@ function getVm($arr)
 function getVmPrice($arr)
 {
     return array_sum([
-        "vcore" => $arr['cpu'] * getProductPrice("vram_static"),
-        "ram" => $arr['cpu'] * getProductPrice("vcpu_static"),
-        "storage" => $arr['cpu'] * getProductPrice($arr['diskIops']),
+        "vcore" => $arr['cpu'] * getProductPrice("vcpu_static"),
+        "ram" => $arr['ram'] * getProductPrice("vram_static"),
+        "storage" => $arr['disk'] * getProductPrice($arr['diskIops']),
     ]);
 }
 
 
-function getMngServicesQty($type)
+function getMngServicesQty($prodType, $type = "price")
 {
     global $key, $DISK, $VMQTY, $con, $_DiscountedData;
     $FinalArr = [];
-    $Query = mysqli_query($con, "SELECT DISTINCT `product`, `prod_int` FROM `product_list` WHERE `sec_category` = '{$type}'");
+    $Query = mysqli_query($con, "SELECT DISTINCT `product`, `prod_int` FROM `product_list` WHERE `sec_category` = '{$prodType}'");
     while ($arr = mysqli_fetch_assoc($Query)) {
         $prod[] = $arr['prod_int'];
     }
     $MGMT = [];
-    $$type = array_keys($DISK[$key]);
-    foreach ($$type as $i => $val) {
+    $Sku_Data = [];
+    $$prodType = array_keys($DISK[$key]);
+    foreach ($$prodType as $i => $val) {
         foreach ($prod as $k => $int) {
             if ($val == $int) {
                 $str = explode("_", $int);
-                $product_name = getProdName($str[0] . "_{$type}_mgmt");
+                $product_name = getProdName($str[0] . "_{$prodType}_mgmt");
                 $DISK_SUM = array_sum($DISK[$key][$int]);
                 $VMQTY_SUM = array_sum($VMQTY[$key][$int]);
                 $mgmt_qty = ($DISK_SUM * $VMQTY_SUM) <= (100 * $VMQTY_SUM) ? ($DISK_SUM * $VMQTY_SUM) : 1;
@@ -260,32 +265,62 @@ function getMngServicesQty($type)
                 }
 
                 $mgmt_unit_cost =    [
-                    "base" => getProductPrice($str[0] . "_{$type}_mgmt"),
+                    "base" => getProductPrice($str[0] . "_{$prodType}_mgmt"),
                     "upto100" => $upto100 > 0 ? 1100 : 0,
                     "upto50" => $upto50 > 0 ? 550 : 0,
                 ];
 
                 $mgmt_mrc = [
-                    "base" => getProductPrice($str[0] . "_{$type}_mgmt") * 1,
+                    "base" => getProductPrice($str[0] . "_{$prodType}_mgmt") * 1,
                     "upto100" => $upto100 > 0 ? 1100 * $upto100 : 0,
                     "upto50" => $upto50 > 0 ? 550 * $upto50 : 0,
                 ];
 
-                $MGMT[$str[0] . "_{$type}_mgmt"] = [
+                $MGMT[$str[0] . "_{$prodType}_mgmt"] = [
                     "service" => "Service",
                     "product" => $product_name,
-                    "qty" => ($mgmt_qty) . " " . getUnitName($str[0] . "_{$type}_mgmt", "prod_int")["unit_name"],
+                    "qty" => ($mgmt_qty) . " " . getUnitName($str[0] . "_{$prodType}_mgmt", "prod_int")["unit_name"],
                     "unit_price" => array_sum($mgmt_unit_cost),
                     "mrc" => array_sum($mgmt_mrc),
                     "otc" => $_V[""],
-                    "discount" => empty($_DiscountedData[$key]["Data"]["managed"][$str[0] . "_{$type}_mgmt"]) ? 0 : $_DiscountedData[$key]["Data"]["managed"][$str[0] . "_{$type}_mgmt"],
+                    "discount" => empty($_DiscountedData[$key]["Data"]["managed"][$str[0] . "_{$prodType}_mgmt"]) ? 0 : $_DiscountedData[$key]["Data"]["managed"][$str[0] . "_{$prodType}_mgmt"],
                 ];
+
+
+                $Sku_Data[$str[0] . "_{$prodType}_mgmt_base"] = [
+                    "qty" => $mgmt_qty,
+                    "sku_code" => getProductSku($str[0] . "_{$prodType}_mgmt"),
+                    "unit_price" => $mgmt_unit_cost["base"],
+                    "discount" => 50,
+                ];
+                if ($mgmt_unit_cost["upto100"] > 0) {
+                    $Sku_Data[$str[0] . "_{$prodType}_mgmt_upto100"] = [
+                        "qty" => $mgmt_qty,
+                        "sku_code" => getProductSku($str[0] . "_{$prodType}_mgmt"),
+                        "unit_price" => $mgmt_unit_cost["upto100"],
+                        "discount" => 50,
+                    ];
+                }
+                if ($mgmt_unit_cost["upto50"] > 0) {
+                    $Sku_Data[$str[0] . "_{$prodType}_mgmt_base_upto50"] = [
+                        "qty" => $mgmt_qty,
+                        "sku_code" => getProductSku($str[0] . "_{$prodType}_mgmt"),
+                        "unit_price" => $mgmt_unit_cost["upto50"],
+                        "discount" => 50,
+                    ];
+                }
             }
         }
     }
-    return $MGMT;
+
+    if ($type == "price") {
+        return $MGMT;
+    } else {
+        return $Sku_Data;
+    }
 }
 
+// 
 function getSoftwareLic($type)
 {
     global $key, $_DiscountedData, $CPU, $VMQTY, $con, $STATE;
@@ -311,9 +346,9 @@ function getSoftwareLic($type)
                 list($variableName, $value) = explode(' = ', $Q['calculation']);
                 $$variableName = $value;
                 for ($i = 0; $i < count($CPU[$key][$val]); $i++) {
-                    if(preg_match("/ms/",$val) && preg_match("/Passive/",$STATE[$key][$val][$i])){
+                    if (preg_match("/ms/", $val) && preg_match("/Passive/", $STATE[$key][$val][$i])) {
                         $totalCores[] = $CPU[$key][$val][$i] * intval($VMQTY[$key][$val][$i] / 2);
-                    }else{
+                    } else {
                         $totalCores[] = $CPU[$key][$val][$i] * $VMQTY[$key][$val][$i];
                     }
                 }
