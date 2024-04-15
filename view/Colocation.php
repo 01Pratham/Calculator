@@ -34,9 +34,9 @@ function Colocation($name, $id)
                 </select>
             </span>
             <script>
-                $('#coptI_<?= $id ?>').click(() => {
-                    $('#coptI_<?= $id ?> input').click()
-                })
+                // $('#coptI_<?= $id ?>').click(() => {
+                //     $('#coptI_<?= $id ?> input').click()
+                // })
             </script>
         </div>
         <div class="show my-1 except" id="estmt_collapse_<?= $id ?>">

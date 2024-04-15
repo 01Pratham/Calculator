@@ -141,30 +141,39 @@ if (!function_exists("getProdName")) {
     {
         global $con;
         $query = mysqli_fetch_assoc(mysqli_query($con, "SELECT DISTINCT `product` FROM `product_list` WHERE `prod_int` = '{$int}'"));
-        return $query['product'];
+        return $query["product"];
+        // return "SELECT DISTINCT `product` FROM `product_list` WHERE `prod_int` = '{$int}'"; 
     }
 }
 
 if (!function_exists("getProductPrice")) {
-    function getProductPrice($int)
+    function getProductPrice($int, $col = "price" )
     {
-
         global $con;
         try {
-            $query = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `product_list` WHERE `prod_int` = '{$int}'"));
-            $price = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `rate_card_prices` WHERE `prod_id` = {$query['id']}"));
-            return $price['price'];
+            $query = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM product_list WHERE prod_int = '{$int}'"));
+            $price = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM rate_card_prices WHERE prod_id = {$query['id']}"));
+            return floatval($price[$col]);
         } catch (Error $e) {
             return 0;
         }
     }
 }
 
+if(!function_exists("getProductInfo")){
+    function getProductInfo($int){
+        global $con;
+        try{
+            return mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `prod_list` WHERE `prod_int` = '{$int}'"));
+        }catch(Error $e){
+            return [];
+        }
+    }
+}
 
 if (!function_exists("getProductSku")) {
     function getProductSku($int)
     {
-
         global $con;
         try {
             $query = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `product_list` WHERE `prod_int` = '{$int}'"));
@@ -218,7 +227,9 @@ if (!function_exists("getProductUnit")) {
             $quer2 = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `tbl_unit` WHERE `id` = {$row['unit_id']}"));
             $unitId[] = $quer2;
         }
+
         if (count($unitId) > 0) {
+            // PPrint($unitId);
             return $unitId;
         } else {
             return [

@@ -2,24 +2,31 @@
 session_start();
 require("database.php");
 
-if ($_POST['action'] == 'Delete') {
-  deleteEstimate($con, $_POST['id']);
-} elseif (preg_match("/Discount/", $_POST['action'])) {
-  updateDiscountTbl($con, $_POST);
-} else {
-  saveEstmt($con);
+// PPrint($_POST); 
+if(!empty($_POST)){
+  if ($_POST['action'] == 'Delete') {
+    deleteEstimate($con, $_POST['id']);
+  } elseif (preg_match("/Discount/", $_POST['action'])) {
+    updateDiscountTbl($con, $_POST);
+  } else {
+    saveEstmt($con);
+  }
 }
 
-function deleteEstimate($con, $id)
+function deleteEstimate($conn, $id)
 {
-  $stmt = mysqli_prepare($con, "DELETE FROM `tbl_saved_estimates` WHERE `id` = ?");
-  mysqli_stmt_bind_param($stmt, 'i', $id);
-  if (mysqli_stmt_execute($stmt)) {
-    echo "deleted";
+  global $con;
+  $query1 =  "DELETE FROM `tbl_discount_data` WHERE `quot_id` = '{$id}'";
+  $query2 =  "DELETE FROM `tbl_saved_estimates` WHERE `id` = '{$id}'";
+  
+  $stmt1 = mysqli_query($con, $query1);
+  $stmt2 = mysqli_query($con, $query2);
+
+  if ($stmt1 && $stmt2) {
+    echo "Deleted";
   } else {
-    echo "Error deleting data";
+    echo "Error: " . mysqli_error($con);
   }
-  mysqli_stmt_close($stmt);
 }
 
 function saveEstmt($con)
@@ -38,44 +45,46 @@ function saveEstmt($con)
   if ($_POST['action'] == 'update') {
     $Total = (isset($_POST['total'])) ? "`total_upfront`='{$_POST['total']}' ," : ('');
     // $discountedData = (isset($_POST['discountedData'])) ? "`discountdata` = '{$_POST['discountedData']}' ," : ("");
-    $discounted_upfront = (isset($_POST['discounted_upfront'])) ? "`discounted_upfront` = '{$_POST['discounted_upfront']}' " : ('');
+    $discounted_upfront = (isset($_POST['discounted_upfront'])) ? "`discounted_upfront` = '{$_POST['discounted_upfront']}' ,  " : ('');
     $data = (isset($_POST['data'])) ? "`data` = '{$_POST['data']}' ," : ("");
     $priceData = (isset($_POST['priceData'])) ? "`prices` = '{$_POST['priceData']}' ," : ("");
-    $total = (isset($_POST['total'])) ? "`total_upfront` = '{$_POST['total']}' " : ("");
+    $total = (isset($_POST['total'])) ? "`total_upfront` = '{$_POST['total']}' ," : ("");
     $pot_id = (isset($_POST['pot_id'])) ? "`pot_id` = '{$_POST['pot_id']}' ," : ("");
     $project_name = (isset($_POST['project_name'])) ? "`project_name` = '{$_POST['project_name']}' ," : ("");
     $period = (isset($_POST['period'])) ? "`contract_period` = '{$_POST['period']}' ," : ("");
-    $lastUpdated = "`last_changed_by` = '{$_SESSION['emp_code']}',";
+    $lastUpdated = "`last_changed_by` = '{$_SESSION['emp_code']}'";
 
+    $Query = "UPDATE `tbl_saved_estimates` SET 
+    {$Total}
+    {$data}
+    {$priceData}
+    {$pot_id}
+    {$project_name}
+    {$period}
+    {$total}
+    {$discounted_upfront}
+    {$lastUpdated}
+    WHERE `id` = '{$_SESSION['edit_id']}'";
     $stmt = mysqli_query(
       $con,
-      "UPDATE `tbl_saved_estimates` SET 
-                {$Total}
-                {$data}
-                {$priceData}
-                {$lastUpdated}
-                {$pot_id}
-                {$project_name}
-                {$period}
-                {$total}
-                {$discounted_upfront}
-                WHERE `id` = '{$_SESSION['edit_id']}'"
+      $Query
     );
   } else {
-    $stmt = mysqli_query($con, "INSERT INTO `tbl_saved_estimates`(
-            `emp_code`,
-            `pot_id`,
-            `project_name`,
-            `version`,
-            `owner`,
-            `last_changed_by`,
-            `date_created`,
-            `date_updated`,
-            `contract_period`,
-            `total_upfront`,
-            `data`,
-            `prices`
-        ) VALUES ('{$empCode}', '{$projectId}', '{$projectName}', '{$version}', '{$empCode}', '{$empCode}', '{$date}', '{$date}', '{$_POST['period']}', '{$_POST['total']}', '{$data}', '{$prices}')");
+    $Query = "INSERT INTO `tbl_saved_estimates`(
+      `emp_code`,
+      `pot_id`,
+      `project_name`,
+      `version`,
+      `owner`,
+      `last_changed_by`,
+      `date_created`,
+      `date_updated`,
+      `contract_period`,
+      `total_upfront`,
+      `data`,
+      `prices`
+  ) VALUES ('{$empCode}', '{$projectId}', '{$projectName}', '{$version}', '{$empCode}', '{$empCode}', '{$date}', '{$date}', '{$_POST['period']}', '{$_POST['total']}', '{$data}', '{$prices}')";
+    $stmt = mysqli_query($con, $Query);
   }
 
   if ($stmt) {
@@ -88,7 +97,7 @@ function saveEstmt($con)
     );
     echo json_encode($arr);
   } else {
-    echo 'Error while storing data';
+    echo "Error while storing data ";
   }
 }
 
@@ -102,6 +111,7 @@ function updateDiscountTbl($con, $data)
       $query = mysqli_query($con, "UPDATE `tbl_discount_data` SET `approved_status`='{$data['status']}' , `approved_by`='{$data['approved_by']}'  WHERE `quot_id` = '{$data['id']}'");
     } else {
       $query = mysqli_query($con, "UPDATE `tbl_discount_data` SET `discounted_data` = '{$data['discountedData']}' , `discounted_mrc` = '{$data['discounted_upfront']}' WHERE `quot_id` = '{$data['id']}'");
+      mysqli_query($con, "UPDATE `tbl_saved_estimates` SET `prices` = '{$data['prices']}' WHERE `id` = '{$data['id']}'");
     }
   } else {
     // $Q =  "INSERT INTO `tbl_discount_data`(`quot_id`, `discounted_data`, `approved_status` , `approved_by`) VALUES ('{$data['id']}','{$data['discountedData']}','' , '{$data['approved_by']}')";

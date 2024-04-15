@@ -3,7 +3,7 @@
 function DC_DR($name, $id, $type = '', $cloneId = '')
 {
     // echo $name." ". $id." " .$type." " . $cloneId;
-    if(session_status() === PHP_SESSION_NONE){
+    if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
     // echo session_status();
@@ -20,7 +20,7 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
             <?php
             if ($type == "ajax" || $type == "clone") {
             ?>
-                <input class="add-estmt btn btn-link except text-primary" type="button" role="button" title="Remove Estimate" id="rem-estmt_<?= $id ?>" style="z-index: 1;" value="&times;">
+                <input onclick="$(this).parent().parent().remove()" class="add-estmt btn btn-link except text-primary" type="button" role="button" title="Remove Estimate" id="rem-estmt_<?= $id ?>" style="z-index: 1;" value="&times;">
             <?php
             } else {
             ?>
@@ -33,11 +33,13 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
             <?php
             }
             ?>
+            <!-- <input class="add-estmt btn btn-link except text-primary" type="button" role="button" title="Clone Estimate" id="add-estmt" style="z-index: 1;" value=""> -->
+
             <input type="checkbox" id="checkHead_<?= $id ?>" class="head-btn d-none">
             <label class="text-left text-primary pt-3" for="checkHead_<?= $id ?>" id="estmtHead_<?= $id ?>" style="z-index: 1;">
                 <h6 class="OnInput">Your Estimate</h6>
             </label>
-            <span class="float-right pt-3">
+            <span class="float-right pt-2">
                 <select name="<?= $name ?>[region]" id="region_<?= $id ?>" class="border-0 text-primary">
                     <?php
                     $reg = mysqli_query($con, "SELECT * FROM `tbl_region`");
@@ -57,15 +59,16 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
                     <option <?= ($Editable['EstType'][$name] == "DC") ? "selected" : '' ?> value="DC">DC</option>
                     <option <?= ($Editable['EstType'][$name] == "DR") ? "selected" : '' ?> value="DR">DR</option>
                 </select> -->
-                <!-- <i class="fa fa-copy except text-primary  pt-2 m-1" title="Copy Estimate" style="z-index: 1; cursor: pointer;" id="coptI_<?= $id ?>">
+            <!-- <i class="fa fa-copy except text-primary  pt-2 m-1" title="Copy Estimate" style="z-index: 1; cursor: pointer;" id="coptI_<?= $id ?>">
                     <input class="add-estmt btn btn-link except m-0 p-0" type="button" role="button" id="clone-est_<?= $id ?>" style="z-index: 5; font-size: 20px;">
                 </i> -->
+                <button class="clone-estmt btn btn-link except text-primary" type="button" role="button" title="Clone Estimate" id="clone-estmt_<?= $id ?>" data-id="<?= $id ?>" data-name="<?= $name ?>" style="z-index: 1;" onclick="event.preventDefault(); cloneEst($(this));"><i class="fa fa-copy except"></i></button>
+                <script>
+                    // $("#clone-estmt_<?= $id ?>").click(function(e) {
+                    //     cloneEst(e, $(this));
+                    // });
+                </script>
             </span>
-            <script>
-                $('#coptI_<?= $id ?>').click(() => {
-                    $('#coptI_<?= $id ?> input').click()
-                })
-            </script>
         </div>
         <div class="show my-1 except" id="estmt_collapse_<?= $id ?>">
             <div class="tab card card-body">
@@ -79,34 +82,22 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
                     </div>
                 </div>
                 <div id="virtual_machine_<?= $id ?>">
-                    <input type="hidden" name="<?= $name ?>[count_of_virtual_machine]" id="count_of_virtual_machine_<?= $name ?>" value="<?= !empty($Editable[$name]['count_of_virtual_machine']) ?$Editable[$name]['count_of_virtual_machine'] : 0 ?>">
+                    <input type="hidden" name="<?= $name ?>[count_of_virtual_machine]" id="count_of_virtual_machine_<?= $name ?>" value="<?= !empty($Editable[$name]['count_of_virtual_machine']) ? $Editable[$name]['count_of_virtual_machine'] : 0 ?>">
 
                     <?php
                     require 'Components/VirtualMachine.php';
 
-                    // vmContent($name, $id, 0, "", $cloneId);
                     if ($Editable[$name]['count_of_virtual_machine'] > 0) {
                         $i = 1;
                         foreach ($Editable[$name] as $key => $val) {
                             if (preg_match("/vm/", $key)) {
-                                // echo $key;
-                                // if ($i == 1 ) {
-                                // $i++;
-
-                                //     continue;
-                                // }
-                                $new_id = preg_replace("/vm_/","", $key);
-                                // echo $i;
-                                
+                                $new_id = preg_replace("/vm_/", "", $key);
                                 vmContent($name, $new_id, $i, 'ajax', $cloneId);
                                 $i++;
-                                
                             }
-                            // echo "hi";
                         }
                     }
 
-                    // PPrint($Editable[$name]);
                     ?>
                 </div>
 
@@ -125,13 +116,13 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
                     <div id="<?= $key . "_{$id}" ?>">
                         <div class="contain-btn btn-link border-bottom " id='<?= $key ?>_head_<?= $id ?>'>
                             <a class="btn btn-link text-left" id="<?= $key ?>_head_<?= $id ?>" data-toggle="collapse" href="#<?= $key . "collapse_{$id}" ?>" role="button" aria-expanded="true" aria-controls="<?= $key . "collapse_{$id}" ?>">
-                                <i class="fa fa-desktop"></i>
+                                <i class="fa fa-box"></i>
                                 <h6 class="d-inline-block ml-1">
                                     <?= ucwords($key) ?> :
                                 </h6>
                                 <h6 class="d-inline-block ml-1 OnInput"></h6>
                             </a>
-                            <input type="button" value=" Remove " class="add-estmt btn btn-link float-right except remove" id="rem-vm_<?= $id ?>" data-toggle="button" aria-pressed="flase" autocomplete="on">
+                            <input type="button" value=" Remove " class="add-estmt btn btn-link float-right except remove" id="rem-vm_<?= $id ?>" data-toggle="button" aria-pressed="flase" autocomplete="on" onclick="$(this).parent().parent().remove()">
                         </div>
                         <div class="collapse show py-1" id="<?= $key . "collapse_{$id}" ?>">
                             <div class="row main-row">
@@ -153,7 +144,6 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
                         </div>
                     </div>
                 <?php
-
                 }
                 ?>
 
@@ -185,8 +175,12 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
             }
         })
 
-        $('#rem-estmt_<?= $id ?>').click(function() {
-            $("#est_div_<?= $id ?>").remove();
+        // $('#rem-estmt_<?= $id ?>').click(function() {
+        //     $("#est_div_<?= $id ?>").remove();
+        // })
+
+        $(".rem-est").click(function() {
+            $(this).parent().parent().remove()
         })
 
         validate_input('.sec-check');
@@ -246,6 +240,7 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
         $('#EstType_<?= $id ?>').on("change", function() {
             if ($(this).val() == "DR") {
                 $('.DR_<?= $name ?>').removeClass('d-none');
+                d
             } else {
                 $('.DR_<?= $name ?>').addClass('d-none');
             }
@@ -257,11 +252,6 @@ function DC_DR($name, $id, $type = '', $cloneId = '')
                 $('.DR_<?= $name ?>').addClass('d-none');
             }
         })
-
-        $('#clone-est_<?= $id ?>').click(function() {
-            add_estmt('clone', <?= $id ?>);
-        })
-
 
         if ($('#hsm_type_<?= $id ?>').val() === "Dedicated HSM") {
             $('#hsm_type_<?= $id ?>').parent().find('.hide span').html("Keys");

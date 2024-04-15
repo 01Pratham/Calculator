@@ -7,7 +7,7 @@ if (isset($_GET['id'])) {
     }
     $ProjectTotal = array();
     $MothlyTotal = array();
-    $_SESSION["edit_id"] = $_GET['id']; 
+    $_SESSION["edit_id"] = $_GET['id'];
 ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -52,7 +52,6 @@ if (isset($_GET['id'])) {
                 <div class="content Main except ">
                     <div class="container-fluid except full" style="zoom : 65%">
                         <div class="errors except container" style="max-width: 2020px; margin: auto; "> </div>
-
                         <?php
                         if (isset($_GET["id"])) {
                             $Quer = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `tbl_saved_estimates` WHERE `id` = '{$_GET['id']}'"));
@@ -68,9 +67,11 @@ if (isset($_GET['id'])) {
                         }
                         ?>
                         <div class="container except d-flex justify-content-center mt-3 py-3">
-                            <button class="btn btn-outline-success btn-lg mx-1 export" id="export"><i class="fa fa-file-excel-o pr-2"></i> Export</button>
-                            <!-- <button class="btn btn-outline-primary btn-lg mx-1" id="push" onclick="Push()"><i class="fab fa-telegram-plane pr-2" aria-hidden="true"></i>Push</button> -->
-                            <!-- <button class="btn btn-outline-success btn-lg mx-1 export" id="exportShareable"><i class="fa fa-file-excel-o pr-2"></i> Export as Shareable</button> -->
+                            <?php
+                            if (UserRole(1)) {
+                            ?>
+                                <button class="btn btn-outline-success btn-lg mx-1 export" id="export"><i class="fa fa-file-excel-o pr-2"></i> Export</button>
+                            <?php } ?>
                             <button class="btn btn-outline-danger btn-lg mx-1 save" id="update"><i class="fas fa-refresh pr-2"></i> Update</button>
                         </div>
                     </div>
@@ -110,13 +111,18 @@ if (isset($_GET['id'])) {
                 }
                 <?php
                 if (UserRole("3")) { ?>
-                    $('.discount').attr('contentEditable', 'true')
                     var mrc = $('#vm-mrc').html();
                     $(".discount").keypress(function(e) {
                         var key = e.keyCode || e.charCode;
                         if (key == 13) {
                             $(this).blur();
                             $(this).html();
+                        }
+                    }).each(function() {
+                        let actual = parseFloat($(this).parent().find(".cost").data("unit"));
+                        let changed = parseFloat($(this).parent().find(".cost").data("changed"));
+                        if (actual == changed) {
+                            $(this).attr('contentEditable', 'true')
                         }
                     })
 
@@ -148,18 +154,19 @@ if (isset($_GET['id'])) {
                 }
                 $('.save').click(function() {
                     let TotalDiscountedMrc = 0;
-                    $(".MonthlyDiscounted").each(function(){
+                    $(".MonthlyDiscounted").each(function() {
                         TotalDiscountedMrc += $(this).data('value')
                     });
                     $.ajax({
                         type: "POST",
                         url: '../model/saveToDB.php',
                         data: {
-                            'action': "Discount",
-                            'emp_id': <?= $_SESSION['emp_code'] ?>,
-                            'id': '<?= $_GET['id'] ?>',
-                            "discountedData": JSON.stringify(DiscountedData),
-                            "discounted_upfront": TotalDiscountedMrc
+                            action: "Discount",
+                            emp_id: <?= $_SESSION['emp_code'] ?>,
+                            id: '<?= $_GET['id'] ?>',
+                            discountedData: JSON.stringify(DiscountedData),
+                            discounted_upfront: TotalDiscountedMrc,
+                            prices: JSON.stringify($_Prices),
                         },
                         dataType: "TEXT",
                         success: function(response) {

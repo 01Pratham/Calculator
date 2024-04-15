@@ -11,7 +11,7 @@ if (isset($_SESSION['uname'])) {
     include '../model/editable.php';
     require '../controller/Currency_Format.php';
 
-    // print_r($Editable);
+    // print_r($Editable); 
 ?>
 
     <!DOCTYPE html>
@@ -28,19 +28,11 @@ if (isset($_SESSION['uname'])) {
 
     <?php
     require '../view/includes/nav.php';
-    // print_r($_SERVER);
-
     require 'estmt.php';
 } else {
     header('Location: ../login.php');
 }
-
-
     ?>
-
-
-
-
     </body>
 
     </html>

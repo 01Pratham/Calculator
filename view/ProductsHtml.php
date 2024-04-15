@@ -11,7 +11,6 @@ if (!function_exists("ProductsHtml")) {
         $request = $Array["request"];
         // PPrint($Array);
         if ($request === "prod") {
-            // echo "SELECT * FROM `product_list` WHERE `default_int` = '{$prod}'";
             elem([
                 "id" => $id,
                 "prod" => $prod,
@@ -30,7 +29,7 @@ if (!function_exists("ProductsHtml")) {
                         </h6>
                         <h6 class="d-inline-block ml-1 OnInput"></h6>
                     </a>
-                    <input type="button" value=" Remove " class="add-estmt btn btn-link float-right except remove" id="rem-vm_<?= $id ?>" data-toggle="button" aria-pressed="flase" autocomplete="on">
+                    <input type="button" value=" Remove " class="add-estmt btn btn-link float-right except remove" id="rem-vm_<?= $id ?>" data-toggle="button" aria-pressed="flase" autocomplete="on" onclick="$(this).parent().parent().remove()">
                 </div>
                 <div class="collapse show py-1" id="<?= $category . "collapse_{$id}" ?>">
                     <div class="row main-row">
@@ -52,7 +51,7 @@ if (!function_exists("ProductsHtml")) {
     function elem($Array)
     {
         // "{$prod}_select[{$name}]"
-        global $Editable, $con;
+        global $Editable, $con, $_GET;
 
         $id = $Array["id"];
         $prod = $Array["prod"];
@@ -64,38 +63,49 @@ if (!function_exists("ProductsHtml")) {
             <span class="fa fa-remove text-danger" style="position: absolute; margin: 4px 0px 0px -7px; cursor: pointer; z-index : 1;" onclick="$(this).parent().remove()"></span>
             <select name="<?= "{$name}[{$category}][{$prod}_select]" ?>" id="<?= "{$prod}_select_{$id}" ?>" class="border-0 small Product-Select col-md-12">
                 <?php
-                $Query = mysqli_query($con, "SELECT * FROM `product_list` WHERE `default_int` = '{$prod}'");
+                $Query = mysqli_query($con, "SELECT * FROM `product_list` WHERE `default_int` = '{$prod}' AND `is_active` = 1");
+                $i = 1;
                 while ($row = mysqli_fetch_assoc($Query)) {
                     $tbl_ui = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM `tbl_ui_options` WHERE `sec_category_name` = '{$row['sec_category']}'"));
                     $input_box = ($tbl_ui['input_num'] == "False") ? false : true;
-                    $prodId = $row['id'];
-
-                    if ($tbl_ui['select_box'] != "True") {
+                    
+                    if ($tbl_ui['select_box'] == "False") {
                         echo "
-                    <option value='{$row['default_int']}'>{$row['default_name']}</option>   
-                ";
+                        <option value='{$row['default_int']}'>{$row['default_name']}</option>   
+                        ";
                         break;
                     } else {
-                ?>
+                        ?>
                         <option value="<?= $row['prod_int'] ?>" <?= ($Editable[$name][$category]["{$prod}_select"] == $row['prod_int']) ? "selected" : "" ?>>
                             <?= $row['product'] ?>
                         </option>
                 <?php
+                        if(isset($Editable[$name][$category]["{$prod}_select"]) && !empty($Editable[$name][$category]["{$prod}_select"])){
+                            if($Editable[$name][$category]["{$prod}_select"] == $row['prod_int']){
+                                $prodId[0] = $row['id'];
+                            }else{
+                                $prodId[$i] = $row['id'];
+                            }
+                        }else{
+                            $prodId[] = $row['id'];
+                        }
+
+                        $i++;
                     }
                 }
                 ?>
             </select>
             <div class="input-group">
-                <input type='number' aria-describedby="<?= "{$prod}unit_{$id}" ?>" class='form-control small col-md-8' id='<?= "{$prod}_qty_{$id}" ?>' <?= (!$input_box) ? "disabled" : '' ?> min=0 placeholder='Quantity' name='<?= "{$name}[{$category}][{$prod}_qty]" ?>' value="<?= $Editable[$name][$category]["{$prod}_qty"] ?>">
+                <input type='number' aria-describedby="<?= "{$prod}unit_{$id}" ?>" class='form-control small col-md-8' id='<?= "{$prod}_qty_{$id}" ?>' <?= (!$input_box) ? "readonly" : 'required' ?> min=0 placeholder='Quantity' name='<?= "{$name}[{$category}][{$prod}_qty]" ?>' value="<?= $Editable[$name][$category]["{$prod}_qty"] ?>">
                 <span class="input-group-text text-centers unit form-control col-4 bg-light p-1" id="<?= "{$prod}unit_{$id}" ?>">
                     <?php
                     // PPrint((getProductUnit($prodId)));
-                    if (count(getProductUnit($prodId)) != 1) {
-                        ?>
+                    if (count(getProductUnit($prodId[0])) != 1) {
+                    ?>
                         <select name="<?= "{$name}[{$category}][{$prod}_unit]" ?>" id="<?= "{$prod}_unit_{$id}" ?>" style="width : 100%; background: transparent;" class="form-control border-0 ">
                             <?php
-                            foreach (getProductUnit($prodId) as $arr) {
-                                if (($Editable[$name][$category]["{$prod}_select"] == $row["prod_int"])) {
+                            foreach (getProductUnit($prodId[0]) as $arr) {
+                                if (($Editable[$name][$category]["{$prod}_unit"]) == $arr["id"]) {
                                     echo "<option value = '{$arr['id']}' Selected>{$arr['unit_name']}</option>";
                                 } else {
                                     echo "<option value = '{$arr['id']}'>{$arr['unit_name']}</option>";
@@ -105,7 +115,8 @@ if (!function_exists("ProductsHtml")) {
                         </select>
                     <?php
                     } else {
-                        echo getProductUnit($prodId)[0]["unit_name"];
+                        // echo $prodId[0];
+                        echo getProductUnit($prodId[0])[0]["unit_name"];
                     }
                     ?>
                 </span>

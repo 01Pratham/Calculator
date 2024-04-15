@@ -1,66 +1,55 @@
 <?php
 
 require "../model/database.php";
-// require "Currency_Format.php";
 
 if (isset($_POST['action']) && $_POST['action'] == "Discount") {
-    // print_r($_POST);
     $discountPercentage = $_POST['discountVal'];
     $months = $_POST[''];
     $Total = $_POST['Total'];
     $Data = json_decode(($_POST['data']), true);
     $maxDiscountTotal = array();
     $newTotal = array();
-    // PPrint($Data);
     foreach ($Data as $Index => $Arr) {
         if (is_array($Arr)) {
             foreach ($Arr as $Key => $Val) {
                 if (is_array($Val)) {
-                    if (preg_match("/vm/", $Index)) {
-                        $maxDiscountTotal[] = (Product($Val['SKU'])["discountable_price"] * intval($Val["Quantity"])) * floatval($Arr["QTY"]);
-                    } else {
-                        $maxDiscountTotal[] = (Product($Val['SKU'])["discountable_price"] * intval($Val["Quantity"]));
-                    }
-                    // $maxDiscountTotal[] = (Product($Val['SKU'])["discountable_price"] * intval($Val["Quantity"])) * floatval($Arr["QTY"]);
+                    $Discountable_percentage = Product($Val['SKU'])["discountable_percentage"];
+                    $groupQty = (preg_match("/vm/", $Index)) ? floatval($Arr["QTY"]) : 1;
+                    $maxDiscountTotal[] = ($Discountable_percentage / 100) * floatval($Val['MRC']);
+                    $newTotal[] = floatval($Val['MRC']);
                     $inputPrices[] = Product($Val['SKU'])["input_price"];
                     $Prices[] = Product($Val['SKU'])["price"];
-                    $newTotal[] = $Val['MRC'];
-                    $Quantity[] = intval($Val["Quantity"]);
-                    // echo $key;
+                    $Quantity[] = intval($Val["Quantity"]) * $groupQty;
                 }
             }
         }
     }
-    // PPrint($maxDiscountTotal);
-
-    $discountToBeGiven = (array_sum($newTotal) * floatval($discountPercentage));
-    $avgDiscPerc = floatval($discountToBeGiven) / array_sum($maxDiscountTotal);
+    $discountToBeGiven = ($Total * floatval($discountPercentage));
+    $avgDiscPerc = (floatval($discountToBeGiven) / array_sum($maxDiscountTotal));
     $DiscountedMrcArr = array();
     foreach ($Data as $Index => $Arr) {
         if (is_array($Arr)) {
             foreach ($Arr as $Key => $Val) {
-                if (preg_match("/vm/", $Index)) {
-                    if ($Key == "QTY") continue;
-                    $MR = floatval($Val["MRC"]) * floatval($Arr["QTY"]);
-                    $DM = ($MR -
-                        (((floatval(Product($Val['SKU'])["discountable_price"]) * floatval($Val["Quantity"])) * floatval($Arr["QTY"])) *
-                            floatval($avgDiscPerc)));
-                    $DiscountedMrcArr[$Index][$Val["product"]] = ($MR <= 0) ? 0 : 100 - (100 * ($DM / $MR));
-                } else {
-                    $MR = floatval($Val["MRC"]);
-                    $DM = floatval($Val['MRC']) -
-                        ((floatval(Product($Val['SKU'])["discountable_price"]) * floatval($Val['Quantity'])) *
-                            floatval($avgDiscPerc));
-
-                    $DiscountedMrcArr[$Index][$Key] = ($MR <= 0) ? 0 : 100 - (100 * ($DM / $MR));
+                if(is_array($Val)){
+                    $Discountable_percentage = Product($Val['SKU'])["discountable_percentage"];
+                    $discountable_price = ($Discountable_percentage / 100) * floatval($Val['MRC']);
+                    $MRC = floatval($Val["MRC"]);
+                    $DMRC = $MRC - ($discountable_price * floatval($avgDiscPerc));
+                    $DiscountedMrcArr[$Index][preg_replace("/ /", "", $Key)] = ($MRC <= 0) ? 0 : 100 - (100 * ($DMRC / $MRC));
                 }
             }
         }
     }
-
     foreach ($DiscountedMrcArr as $KEY => $VAL) {
-        if ($VAL < 0) {
-            $DiscountedMrcArr[$KEY] = 0;
+        if (is_array($VAL)) {
+            foreach ($VAL as $Key => $Val) {
+                if ($Val < 0) {
+                    $DiscountedMrcArr[$KEY][$Key] = 0;
+                }
+                // if ($Val > Product($Data[$KEY][$Key]['SKU'])["discountable_percentage"]) {
+                //     $DiscountedMrcArr[$KEY][$Key] = floatval(Product($Data[$KEY][$Key]['SKU'])["discountable_percentage"]);
+                // }
+            }
         }
     }
 }

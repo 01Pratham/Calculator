@@ -5,5 +5,7 @@
     <script src="../include/dist/js/demo.js"></script>
     <script src="../include/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="../javascript/main.js"></script>
+    <!-- <script src="../javascript/jspdf.min.js"></script>
+    <script src="../javascript/jspdf.plugin.autotable.min.js"></script> -->
     <script src="../javascript/jquery.serializeToJSON.min.js"></script>
 </div>
